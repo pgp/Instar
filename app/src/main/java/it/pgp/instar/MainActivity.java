@@ -2,39 +2,54 @@ package it.pgp.instar;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
-
-import java.io.File;
 
 import it.pgp.instar.adapters.GalleryAdapter;
 
 public class MainActivity extends Activity {
 
-    GridView mainGridView;
+    RecyclerView mainGridView;
     final GalleryAdapter[] ga = {null};
 
-    public final AdapterView.OnItemClickListener oicl = (parent, view, position, id) -> {
-        GalleryAdapter a = (GalleryAdapter) mainGridView.getAdapter();
-        String filepath = new File(a.getItem(position)).getAbsolutePath();
-        Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-        intent.putExtra("IMG_PATH", filepath);
-        startActivity(intent);
-    };
+    enum GalleryOrientation {
+        HORIZONTAL(GridLayoutManager.HORIZONTAL),
+        VERTICAL(GridLayoutManager.VERTICAL);
+
+        public final int orientation;
+
+        GalleryOrientation(int orientation) {
+            this.orientation = orientation;
+        }
+
+        public GalleryOrientation next() {
+            return (this==HORIZONTAL)?VERTICAL:HORIZONTAL;
+        }
+    }
+
+    GalleryOrientation current = GalleryOrientation.HORIZONTAL;
+
+//    public final AdapterView.OnItemClickListener oicl = (parent, view, position, id) -> {
+//        GalleryAdapter a = (GalleryAdapter) mainGridView.getAdapter();
+//        String filepath = new File(a.getItem(position)).getAbsolutePath();
+//        Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
+//        intent.putExtra("IMG_PATH", filepath);
+//        startActivity(intent);
+//    };
 
     public static final int STORAGE_PERM_ID = 123;
+    private static final int numberOfColumns = 3;
 
     public void checkStoragePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -71,7 +86,14 @@ public class MainActivity extends Activity {
         }
     }
 
+    public void swicthGalleryOrientation(View unused) {
+        current = current.next();
+        refreshAdapter();
+    }
+
     public void refreshAdapter() {
+        mainGridView.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
+
         ga[0] = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
         if(ga[0] == null) {
@@ -81,7 +103,6 @@ public class MainActivity extends Activity {
         }
 
         mainGridView.setAdapter(ga[0]);
-        mainGridView.setOnItemClickListener(oicl);
     }
 
     @Override
