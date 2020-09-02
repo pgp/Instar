@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Instar</string>
+    <string name="storage_perm_denied">Storage permission denied</string>
+    <string name="storage_perm_granted">Storage permission granted</string>
 </resources>
