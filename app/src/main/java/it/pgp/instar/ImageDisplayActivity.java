@@ -3,6 +3,7 @@ package it.pgp.instar;
 import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 
@@ -15,7 +16,11 @@ public class ImageDisplayActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_image_display);
 
+        String s = getIntent().getStringExtra("IMG_PATH");
+
+        ((TextView)findViewById(R.id.filepath1)).setText(s);
+
         ZoomableImageView ziv1 = findViewById(R.id.ziv1);
-        ziv1.setImageBitmap(BitmapFactory.decodeFile(getIntent().getStringExtra("IMG_PATH")));
+        ziv1.setImageBitmap(BitmapFactory.decodeFile(s));
     }
 }
