@@ -102,6 +102,7 @@ public class MainActivity extends Activity {
             return;
         }
 
+        mainGridView.setHasFixedSize(true);
         mainGridView.setAdapter(ga[0]);
     }
 
