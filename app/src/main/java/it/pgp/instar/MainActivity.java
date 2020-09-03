@@ -7,7 +7,9 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -16,13 +18,14 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 
 import it.pgp.instar.adapters.GalleryAdapter;
-import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
 public class MainActivity extends Activity {
 
-    final RecyclerView[] mainGridView = {null,null};
+    RecyclerView mainGridView;
+    FastScroller fastScroller;
     final GalleryAdapter[] ga = {null};
 
     enum GalleryOrientation {
@@ -33,6 +36,23 @@ public class MainActivity extends Activity {
 
         GalleryOrientation(int orientation) {
             this.orientation = orientation;
+        }
+
+        public RelativeLayout.LayoutParams getLayoutParams() {
+            if(this==HORIZONTAL) {
+                RelativeLayout.LayoutParams lh = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.WRAP_CONTENT);
+                lh.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                return lh;
+            }
+            else {
+                RelativeLayout.LayoutParams lv = new RelativeLayout.LayoutParams(
+                        ViewGroup.LayoutParams.WRAP_CONTENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT);
+                lv.addRule(RelativeLayout.ALIGN_PARENT_END);
+                return lv;
+            }
         }
 
         public GalleryOrientation next() {
@@ -88,20 +108,22 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void swicthGalleryOrientation(View unused) {
+    public void switchGalleryOrientation(View unused) {
         current = current.next();
         refreshAdapter();
     }
 
     public void refreshAdapter() {
-        mainGridView[0] = findViewById(R.id.mainGridViewHorizontal);
-        mainGridView[1] = findViewById(R.id.mainGridViewVertical);
+//        mainGridView = findViewById(R.id.mainGridView);
+        if(mainGridView != null) rl.removeView(mainGridView);
+        mainGridView = new RecyclerView(this);
+        mainGridView.setLayoutParams(new RelativeLayout.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        if(fastScroller != null) rl.removeView(fastScroller);
+        fastScroller = new FastScroller(this);
 
-        mainGridView[1-current.ordinal()].setVisibility(View.GONE);
-        RecyclerView cur = mainGridView[current.ordinal()];
-        cur.setVisibility(View.VISIBLE);
-
-        cur.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
+        mainGridView.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
 
         ga[0] = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
@@ -111,9 +133,16 @@ public class MainActivity extends Activity {
             return;
         }
 
-        if(current==GalleryOrientation.VERTICAL)
-            new FastScrollerBuilder(cur).build();
-        cur.setAdapter(ga[0]);
+        fastScroller.setOrientation(current==GalleryOrientation.VERTICAL?
+                LinearLayout.VERTICAL:LinearLayout.HORIZONTAL);
+        fastScroller.setLayoutParams(current.getLayoutParams());
+        mainGridView.setAdapter(ga[0]);
+        fastScroller.setRecyclerView(mainGridView);
+
+        rl.addView(mainGridView);
+        rl.addView(fastScroller);
+        findViewById(R.id.reloadImgCacheButton).bringToFront();
+        findViewById(R.id.switchButton).bringToFront();
     }
 
     RelativeLayout rl;
