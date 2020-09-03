@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.view.View;
 import android.view.Window;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
@@ -17,10 +18,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.bumptech.glide.Glide;
 
 import it.pgp.instar.adapters.GalleryAdapter;
+import me.zhanghai.android.fastscroll.FastScrollerBuilder;
 
 public class MainActivity extends Activity {
 
-    RecyclerView mainGridView;
+    final RecyclerView[] mainGridView = {null,null};
     final GalleryAdapter[] ga = {null};
 
     enum GalleryOrientation {
@@ -59,7 +61,7 @@ public class MainActivity extends Activity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                     STORAGE_PERM_ID);
         }
-        else onCreateAfterPermOK();
+        else refreshAdapter();
     }
 
 
@@ -82,7 +84,7 @@ public class MainActivity extends Activity {
             }
 
             Toast.makeText(this, R.string.storage_perm_granted, Toast.LENGTH_SHORT).show();
-            onCreateAfterPermOK();
+            refreshAdapter();
         }
     }
 
@@ -92,7 +94,14 @@ public class MainActivity extends Activity {
     }
 
     public void refreshAdapter() {
-        mainGridView.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
+        mainGridView[0] = findViewById(R.id.mainGridViewHorizontal);
+        mainGridView[1] = findViewById(R.id.mainGridViewVertical);
+
+        mainGridView[1-current.ordinal()].setVisibility(View.GONE);
+        RecyclerView cur = mainGridView[current.ordinal()];
+        cur.setVisibility(View.VISIBLE);
+
+        cur.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
 
         ga[0] = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
@@ -102,21 +111,20 @@ public class MainActivity extends Activity {
             return;
         }
 
-        mainGridView.setHasFixedSize(true);
-        mainGridView.setAdapter(ga[0]);
+        if(current==GalleryOrientation.VERTICAL)
+            new FastScrollerBuilder(cur).build();
+        cur.setAdapter(ga[0]);
     }
+
+    RelativeLayout rl;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.activity_main);
+        rl = findViewById(R.id.rootLayout);
         checkStoragePermissions();
-    }
-
-    public void onCreateAfterPermOK() {
-        mainGridView = findViewById(R.id.mainGridView);
-        refreshAdapter();
     }
 
     public void reloadImgCache(View unused) {
