@@ -2,6 +2,9 @@ package it.pgp.instar;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +12,7 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -131,12 +135,18 @@ public class MainActivity extends Activity {
     }
 
     public void reloadImgCache(View unused) {
-        new Thread(()-> {
-            Glide.get(MainActivity.this).clearDiskCache();
-            runOnUiThread(()->{
-                refreshAdapter();
-                Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
-            });
-        }).start();
+        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+        bld.setTitle("Recreate thumbnail cache?");
+        bld.setNegativeButton("No", (dialog, which) -> {});
+        bld.setPositiveButton("Yes", (dialog, which) ->
+                new Thread(()-> {
+                    Glide.get(MainActivity.this).clearDiskCache();
+                    runOnUiThread(()->{
+                        refreshAdapter();
+                        Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
+                    });
+                }).start());
+        AlertDialog alertDialog = bld.create();
+        alertDialog.show();
     }
 }
