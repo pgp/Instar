@@ -46,7 +46,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    GalleryOrientation current = GalleryOrientation.HORIZONTAL;
+    GalleryOrientation current = GalleryOrientation.VERTICAL;
 
     public static final int STORAGE_PERM_ID = 123;
     private static final int numberOfColumns = 3;
