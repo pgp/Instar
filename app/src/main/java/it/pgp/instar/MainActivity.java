@@ -3,8 +3,6 @@ package it.pgp.instar;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
-import android.view.WindowManager;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
@@ -50,14 +47,6 @@ public class MainActivity extends Activity {
     }
 
     GalleryOrientation current = GalleryOrientation.HORIZONTAL;
-
-//    public final AdapterView.OnItemClickListener oicl = (parent, view, position, id) -> {
-//        GalleryAdapter a = (GalleryAdapter) mainGalleryView.getAdapter();
-//        String filepath = new File(a.getItem(position)).getAbsolutePath();
-//        Intent intent = new Intent(MainActivity.this, ImageDisplayActivity.class);
-//        intent.putExtra("IMG_PATH", filepath);
-//        startActivity(intent);
-//    };
 
     public static final int STORAGE_PERM_ID = 123;
     private static final int numberOfColumns = 3;

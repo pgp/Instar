@@ -1,6 +1,7 @@
 package it.pgp.instar.adapters;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import it.pgp.instar.ImageDisplayActivity;
 import it.pgp.instar.R;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryItemViewHolder> {
@@ -39,6 +41,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .dontAnimate()
                 .into(holder.imageView);
 
+        holder.bind(getItem(position),GalleryAdapter.this);
     }
 
     public String getItem(int position) {
@@ -50,12 +53,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         return objects.size();
     }
 
+    public void onGalleryItemClicked(String filepath) {
+        Intent intent = new Intent(activity, ImageDisplayActivity.class);
+        intent.putExtra("IMG_PATH", filepath);
+        activity.startActivity(intent);
+    }
+
     public static class GalleryItemViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 
         public GalleryItemViewHolder(@NonNull View itemView) {
             super(itemView);
             imageView = itemView.findViewById(R.id.img1);
+        }
+
+        public void bind(String item, GalleryAdapter galleryAdapter) {
+            itemView.setOnClickListener(v -> galleryAdapter.onGalleryItemClicked(item));
         }
     }
 
