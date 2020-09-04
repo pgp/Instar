@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
+import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,6 +31,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         return new GalleryItemViewHolder(view);
     }
 
+    final DrawableCrossFadeFactory crossFadeFactory =
+            new DrawableCrossFadeFactory.Builder().setCrossFadeEnabled(true).build();
+
+    final DrawableTransitionOptions drawableTransitionOptions = new DrawableTransitionOptions().withCrossFade(crossFadeFactory);
+
     @Override
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
         Glide
@@ -36,9 +43,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .load(new File(objects.get(position)).getAbsolutePath())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .placeholder(android.R.drawable.ic_menu_compass)
+                .placeholder(R.drawable.square)
                 .override(250,250)
-                .dontAnimate()
+                .transition(drawableTransitionOptions)
                 .into(holder.imageView);
 
         holder.bind(getItem(position),GalleryAdapter.this);

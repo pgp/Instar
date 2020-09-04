@@ -98,6 +98,7 @@ public class MainActivity extends Activity {
         fastScroller = findViewById(R.id.fastScroll);
 
         mainGalleryView.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
+        mainGalleryView.setHasFixedSize(true);
 
         ga[0] = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
