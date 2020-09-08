@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
@@ -18,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 
 import it.pgp.instar.adapters.GalleryAdapter;
@@ -28,6 +30,23 @@ public class MainActivity extends Activity {
     RecyclerView mainGalleryView;
     FastScroller fastScroller;
     final GalleryAdapter[] ga = {null};
+    RequestManager GlideR;
+
+    private final RecyclerView.OnScrollListener glideScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+            switch (newState) {
+                case RecyclerView.SCROLL_STATE_DRAGGING:
+                    GlideR.pauseRequests();
+                    Log.e("GlideR","Paused");
+                    break;
+                case RecyclerView.SCROLL_STATE_IDLE:
+                    GlideR.resumeRequests();
+                    Log.e("GlideR","Resumed");
+                    break;
+            }
+        }
+    };
 
     enum GalleryOrientation {
         HORIZONTAL(GridLayoutManager.HORIZONTAL, R.layout.recyclerview_horizontal),
@@ -109,6 +128,7 @@ public class MainActivity extends Activity {
         }
 
         mainGalleryView.setAdapter(ga[0]);
+        mainGalleryView.addOnScrollListener(glideScrollListener);
         fastScroller.setRecyclerView(mainGalleryView);
     }
 
@@ -121,6 +141,7 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
+        GlideR = Glide.with(MainActivity.this);
         checkStoragePermissions();
     }
 
