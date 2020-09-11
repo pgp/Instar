@@ -16,6 +16,7 @@ import androidx.viewpager.widget.PagerAdapter;
 
 import com.ortiz.touchview.TouchImageView;
 
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.pgp.instar.adapters.ExtendedViewPager;
@@ -24,24 +25,23 @@ import it.pgp.instar.adapters.GalleryAdapter;
 public class ImageDisplayActivity extends Activity {
 
     String filepath;
-    int position;
     TextView filepath1;
 
     final AtomicBoolean fullScreen = new AtomicBoolean(false);
 
     private class TouchImageAdapter extends PagerAdapter {
 
-        private final GalleryAdapter galleryAdapter;
+        private final List<String> objects;
 
-        public TouchImageAdapter(GalleryAdapter galleryAdapter) {
-            this.galleryAdapter = galleryAdapter;
+        public TouchImageAdapter(List<String> objects) {
+            this.objects = objects;
         }
 
         @NonNull
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             TouchImageView v = new TouchImageView(ImageDisplayActivity.this);
-            String filepath = galleryAdapter.getItem(position);
+            String filepath = objects.get(position);
             v.setImageBitmap(BitmapFactory.decodeFile(filepath));
             v.setOnClickListener(w->{
                 filepath1.setVisibility(filepath1.getVisibility()==View.GONE?View.VISIBLE:View.GONE);
@@ -68,7 +68,7 @@ public class ImageDisplayActivity extends Activity {
 
         @Override
         public int getCount() {
-            return galleryAdapter.getItemCount();
+            return objects.size();
         }
 
         @Override
@@ -95,8 +95,8 @@ public class ImageDisplayActivity extends Activity {
         setContentView(R.layout.activity_image_display);
         filepath1 = findViewById(R.id.filepath1);
         evp1 = findViewById(R.id.evp1);
-        evp1.setAdapter(new TouchImageAdapter(GalleryAdapter.instance));
-        position = getIntent().getIntExtra("IMG_POS",-1);
+        evp1.setAdapter(new TouchImageAdapter(GalleryAdapter.instance.objects));
+        evp1.setCurrentItem(getIntent().getIntExtra("IMG_POS",-1));
         filepath1.setText(filepath);
         window = getWindow();
         defaultUIVisibility = window.getDecorView().getSystemUiVisibility();

@@ -145,6 +145,12 @@ public class MainActivity extends Activity {
         checkStoragePermissions();
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        GalleryAdapter.instance = null;
+    }
+
     public void reloadImgCache(View unused) {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Recreate thumbnail cache?");
