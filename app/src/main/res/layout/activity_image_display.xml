@@ -4,8 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <it.pgp.instar.views.ZoomableImageView
-        android:id="@+id/ziv1"
+    <it.pgp.instar.adapters.ExtendedViewPager
+        android:id="@+id/evp1"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
