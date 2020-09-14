@@ -94,6 +94,27 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         return objects.size();
     }
 
+    public void clearSelection() {
+        for(GalleryItem item : objects)
+            item.selected = false;
+        selectedItems.set(0);
+        notifyDataSetChanged();
+    }
+
+    public void selectAll() {
+        for(GalleryItem item : objects)
+            item.selected = true;
+        selectedItems.set(objects.size());
+        notifyDataSetChanged();
+    }
+
+    public void invertSelection() {
+        for(GalleryItem item : objects)
+            item.toggleSelection();
+        selectedItems.set(objects.size()-selectedItems.get());
+        notifyDataSetChanged();
+    }
+
     public void onGalleryItemClicked(int position) {
         if(selectedItems.get() > 0) { // multi select mode
             onGalleryItemLongClicked(position);

@@ -201,7 +201,7 @@ public class MainActivity extends Activity {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Exit multi select mode? Current selection will be lost");
         bld.setNegativeButton("No", alertDialogNoOpsChoice);
-        bld.setPositiveButton("Yes", (dialog, which) -> refreshAdapter());
+        bld.setPositiveButton("Yes", (dialog, which) -> GalleryAdapter.instance.clearSelection());
         AlertDialog alertDialog = bld.create();
         alertDialog.show();
     }
