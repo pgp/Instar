@@ -7,6 +7,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,7 +49,7 @@ public class MainActivity extends Activity {
         }
     };
 
-    enum GalleryOrientation {
+    public enum GalleryOrientation {
         HORIZONTAL(GridLayoutManager.HORIZONTAL, R.layout.recyclerview_horizontal),
         VERTICAL(GridLayoutManager.VERTICAL, R.layout.recyclerview_vertical);
 
@@ -65,7 +66,7 @@ public class MainActivity extends Activity {
         }
     }
 
-    GalleryOrientation current = GalleryOrientation.VERTICAL;
+    public GalleryOrientation current = GalleryOrientation.VERTICAL;
 
     public static final int STORAGE_PERM_ID = 123;
     private static final int numberOfColumns = 3;
@@ -116,7 +117,7 @@ public class MainActivity extends Activity {
         mainGalleryView = findViewById(R.id.mainGalleryView);
         fastScroller = findViewById(R.id.fastScroll);
 
-        mainGalleryView.setLayoutManager(new GridLayoutManager(this, 5, current.orientation, false));
+        mainGalleryView.setLayoutManager(new GridLayoutManager(this, GalleryAdapter.spans, current.orientation, false));
         mainGalleryView.setHasFixedSize(true);
 
         ga[0] = GalleryAdapter.createAdapter(this,
@@ -133,6 +134,7 @@ public class MainActivity extends Activity {
     }
 
     RelativeLayout rl;
+    public int screenH, screenW;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,6 +144,10 @@ public class MainActivity extends Activity {
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        screenH = displayMetrics.heightPixels;
+        screenW = displayMetrics.widthPixels;
         checkStoragePermissions();
     }
 

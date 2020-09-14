@@ -1,7 +1,10 @@
 package it.pgp.instar.adapters;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,11 +23,18 @@ import java.util.ArrayList;
 import java.util.List;
 
 import it.pgp.instar.ImageDisplayActivity;
+import it.pgp.instar.MainActivity;
 import it.pgp.instar.R;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryItemViewHolder> {
 
     public static GalleryAdapter instance;
+
+    public static final int spans = 5; // TODO will be not final once pinch to zoom will be added to recyclerview
+
+    public int overridePx;
+
+    public final Drawable[] currentPlaceholders = {null,null};
 
     @NonNull
     @Override
@@ -38,6 +48,17 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     final DrawableTransitionOptions drawableTransitionOptions = new DrawableTransitionOptions().withCrossFade(crossFadeFactory);
 
+    public void setPlaceholders() {
+        currentPlaceholders[0] = new BitmapDrawable(
+                activity.getResources(), Bitmap.createScaledBitmap(
+                BitmapFactory.decodeResource(activity.getResources(), R.mipmap.placeholder1),
+                overridePx, overridePx, false));
+        currentPlaceholders[1] = new BitmapDrawable(
+                activity.getResources(), Bitmap.createScaledBitmap(
+                        BitmapFactory.decodeResource(activity.getResources(), R.mipmap.placeholder2),
+                overridePx, overridePx, false));
+    }
+
     @Override
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
         Glide
@@ -45,8 +66,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .load(new File(objects.get(position)).getAbsolutePath())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
-                .placeholder(R.drawable.square)
-                .override(250,250)
+                .placeholder(currentPlaceholders[position%2])
+                .override(overridePx,overridePx)
                 .transition(drawableTransitionOptions)
                 .into(holder.imageView);
 
@@ -81,18 +102,23 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         }
     }
 
-    public final Activity activity;
+    public final MainActivity activity;
     public final List<String> objects;
     protected LayoutInflater inflater;
 
-    private GalleryAdapter(@NonNull Activity activity, @NonNull List<String> objects) {
+    private GalleryAdapter(@NonNull MainActivity activity, @NonNull List<String> objects) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.objects = objects;
+        overridePx = activity.current == MainActivity.GalleryOrientation.VERTICAL ?
+                activity.screenW / spans :
+                activity.screenH / spans
+        ;
+        setPlaceholders();
         instance = this;
     }
 
-    public static GalleryAdapter createAdapter(Activity activity, String basePath) {
+    public static GalleryAdapter createAdapter(MainActivity activity, String basePath) {
         File[] ff = new File(basePath).listFiles();
         if(ff == null) return null;
         List<String> l = new ArrayList<>();
