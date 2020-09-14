@@ -30,7 +30,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     public static GalleryAdapter instance;
 
-    public static final int spans = 5; // TODO will be not final once pinch to zoom will be added to recyclerview
+    public static int spans = 5;
+    public static final int MIN_SPANS = 3;
+    public static final int MAX_SPANS = 7;
 
     public int overridePx;
 

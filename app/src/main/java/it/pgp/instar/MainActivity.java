@@ -10,6 +10,7 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
@@ -127,6 +128,35 @@ public class MainActivity extends Activity {
             finishAffinity();
             return;
         }
+
+        ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
+            @Override
+            public boolean onScale(ScaleGestureDetector detector) {
+                if (detector.getCurrentSpan() > 120 && detector.getTimeDelta() > 200) {
+                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                        Toast.makeText(MainActivity.this, "Less than 1", Toast.LENGTH_SHORT).show();
+                        GalleryAdapter.spans++;
+                        if(GalleryAdapter.spans > GalleryAdapter.MAX_SPANS)
+                            GalleryAdapter.spans = GalleryAdapter.MAX_SPANS;
+                        refreshAdapter();
+                        return true;
+                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                        Toast.makeText(MainActivity.this, "Greater than 1", Toast.LENGTH_SHORT).show();
+                        GalleryAdapter.spans--;
+                        if(GalleryAdapter.spans < GalleryAdapter.MIN_SPANS)
+                            GalleryAdapter.spans = GalleryAdapter.MIN_SPANS;
+                        refreshAdapter();
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+
+        mainGalleryView.setOnTouchListener( (v,me) ->{
+            mScaleGestureDetector.onTouchEvent(me);
+            return false;
+        });
 
         mainGalleryView.setAdapter(ga[0]);
         mainGalleryView.addOnScrollListener(glideScrollListener);
