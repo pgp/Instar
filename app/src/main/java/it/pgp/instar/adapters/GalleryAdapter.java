@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -63,9 +64,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     @Override
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
+        GalleryItem item = objects.get(position);
+
         Glide
                 .with(activity)
-                .load(new File(objects.get(position)).getAbsolutePath())
+                .load(new File(item.filepath).getAbsolutePath())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(currentPlaceholders[position%2])
@@ -73,10 +76,12 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .transition(drawableTransitionOptions)
                 .into(holder.imageView);
 
+        holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
+
         holder.bind(position,GalleryAdapter.this);
     }
 
-    public String getItem(int position) {
+    public GalleryItem getItem(int position) {
         return objects.get(position);
     }
 
@@ -91,6 +96,13 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         activity.startActivity(intent);
     }
 
+    public boolean onGalleryItemLongClicked(int position) {
+        objects.get(position).toggleSelection();
+        Toast.makeText(activity, "Long click position "+position, Toast.LENGTH_SHORT).show();
+        notifyDataSetChanged();
+        return true;
+    }
+
     public static class GalleryItemViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
 
@@ -101,14 +113,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
         public void bind(int position, GalleryAdapter galleryAdapter) {
             itemView.setOnClickListener(v -> galleryAdapter.onGalleryItemClicked(position));
+            itemView.setOnLongClickListener(v -> galleryAdapter.onGalleryItemLongClicked(position));
         }
     }
 
     public final MainActivity activity;
-    public final List<String> objects;
+    public final List<GalleryItem> objects;
     protected LayoutInflater inflater;
 
-    private GalleryAdapter(@NonNull MainActivity activity, @NonNull List<String> objects) {
+    private GalleryAdapter(@NonNull MainActivity activity, @NonNull List<GalleryItem> objects) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.objects = objects;
@@ -123,8 +136,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public static GalleryAdapter createAdapter(MainActivity activity, String basePath) {
         File[] ff = new File(basePath).listFiles();
         if(ff == null) return null;
-        List<String> l = new ArrayList<>();
-        for(File f: ff) l.add(f.getAbsolutePath());
+        List<GalleryItem> l = new ArrayList<>();
+        for(File f: ff) l.add(new GalleryItem(f.getAbsolutePath()));
         return new GalleryAdapter(activity, l);
     }
 }

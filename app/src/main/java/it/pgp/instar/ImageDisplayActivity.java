@@ -21,6 +21,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import it.pgp.instar.adapters.ExtendedViewPager;
 import it.pgp.instar.adapters.GalleryAdapter;
+import it.pgp.instar.adapters.GalleryItem;
 
 public class ImageDisplayActivity extends Activity {
 
@@ -31,9 +32,9 @@ public class ImageDisplayActivity extends Activity {
 
     private class TouchImageAdapter extends PagerAdapter {
 
-        private final List<String> objects;
+        private final List<GalleryItem> objects;
 
-        public TouchImageAdapter(List<String> objects) {
+        public TouchImageAdapter(List<GalleryItem> objects) {
             this.objects = objects;
         }
 
@@ -41,7 +42,7 @@ public class ImageDisplayActivity extends Activity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             TouchImageView v = new TouchImageView(ImageDisplayActivity.this);
-            String filepath = objects.get(position);
+            String filepath = objects.get(position).filepath;
             v.setImageBitmap(BitmapFactory.decodeFile(filepath));
             v.setOnClickListener(w->{
                 filepath1.setVisibility(filepath1.getVisibility()==View.GONE?View.VISIBLE:View.GONE);
