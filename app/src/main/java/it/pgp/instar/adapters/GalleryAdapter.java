@@ -22,6 +22,7 @@ import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import it.pgp.instar.ImageDisplayActivity;
 import it.pgp.instar.MainActivity;
@@ -38,6 +39,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public int overridePx;
 
     public final Drawable[] currentPlaceholders = {null,null};
+
+    public final AtomicInteger selectedItems = new AtomicInteger(0);
 
     @NonNull
     @Override
@@ -76,7 +79,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .transition(drawableTransitionOptions)
                 .into(holder.imageView);
 
-        holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
+        if(selectedItems.get() > 0)
+            holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
 
         holder.bind(position,GalleryAdapter.this);
     }
@@ -91,13 +95,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public void onGalleryItemClicked(int position) {
-        Intent intent = new Intent(activity, ImageDisplayActivity.class);
-        intent.putExtra("IMG_POS", position);
-        activity.startActivity(intent);
+        if(selectedItems.get() > 0) { // multi select mode
+            onGalleryItemLongClicked(position);
+        }
+        else {
+            Intent intent = new Intent(activity, ImageDisplayActivity.class);
+            intent.putExtra("IMG_POS", position);
+            activity.startActivity(intent);
+        }
     }
 
     public boolean onGalleryItemLongClicked(int position) {
-        objects.get(position).toggleSelection();
+        boolean targetSelectionStatus = objects.get(position).toggleSelection();
+        if(targetSelectionStatus) selectedItems.incrementAndGet();
+        else selectedItems.decrementAndGet();
         Toast.makeText(activity, "Long click position "+position, Toast.LENGTH_SHORT).show();
         notifyDataSetChanged();
         return true;

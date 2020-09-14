@@ -3,6 +3,7 @@ package it.pgp.instar;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -187,10 +188,28 @@ public class MainActivity extends Activity {
         GalleryAdapter.instance = null;
     }
 
+    @Override
+    public void onBackPressed() {
+        if(GalleryAdapter.instance != null && GalleryAdapter.instance.selectedItems.get()>0)
+            exitMultiSelectMode();
+        else super.onBackPressed();
+    }
+
+    public final DialogInterface.OnClickListener alertDialogNoOpsChoice = (dialog, which) -> {};
+
+    public void exitMultiSelectMode() {
+        AlertDialog.Builder bld = new AlertDialog.Builder(this);
+        bld.setTitle("Exit multi select mode? Current selection will be lost");
+        bld.setNegativeButton("No", alertDialogNoOpsChoice);
+        bld.setPositiveButton("Yes", (dialog, which) -> refreshAdapter());
+        AlertDialog alertDialog = bld.create();
+        alertDialog.show();
+    }
+
     public void reloadImgCache(View unused) {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Recreate thumbnail cache?");
-        bld.setNegativeButton("No", (dialog, which) -> {});
+        bld.setNegativeButton("No", alertDialogNoOpsChoice);
         bld.setPositiveButton("Yes", (dialog, which) ->
                 new Thread(()-> {
                     Glide.get(MainActivity.this).clearDiskCache();

@@ -14,7 +14,8 @@ public class GalleryItem {
         this.selected = false;
     }
 
-    public void toggleSelection() {
+    public boolean toggleSelection() {
         selected = !selected;
+        return selected;
     }
 }
