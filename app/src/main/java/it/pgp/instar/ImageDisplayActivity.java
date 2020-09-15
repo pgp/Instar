@@ -30,7 +30,7 @@ public class ImageDisplayActivity extends Activity {
 
     String filepath;
     TextView filepath1;
-    RecyclerView miniGalleryRecyclerView;
+    public RecyclerView miniGalleryRecyclerView;
     FastScroller fastScroller;
 
     final AtomicBoolean fullScreen = new AtomicBoolean(false);
@@ -96,7 +96,7 @@ public class ImageDisplayActivity extends Activity {
     int defaultUIVisibility;
     Window window;
 
-    protected ExtendedViewPager evp1;
+    public ExtendedViewPager evp1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,7 +105,8 @@ public class ImageDisplayActivity extends Activity {
         filepath1 = findViewById(R.id.filepath1);
         evp1 = findViewById(R.id.evp1);
         evp1.setAdapter(new TouchImageAdapter(GalleryAdapter.instance.objects));
-        evp1.setCurrentItem(getIntent().getIntExtra("IMG_POS",-1));
+        int pos = getIntent().getIntExtra("IMG_POS",-1);
+        evp1.setCurrentItem(pos);
         filepath1.setText(filepath);
         window = getWindow();
         defaultUIVisibility = window.getDecorView().getSystemUiVisibility();
@@ -122,5 +123,6 @@ public class ImageDisplayActivity extends Activity {
         fastScroller.setRecyclerView(miniGalleryRecyclerView);
         miniGalleryRecyclerView.bringToFront();
         fastScroller.bringToFront();
+        miniGalleryRecyclerView.getLayoutManager().scrollToPosition(pos);
     }
 }

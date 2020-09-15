@@ -119,7 +119,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public void onGalleryItemClicked(int position) {
-        if(selectedItems.get() > 0) { // multi select mode
+        if(!(activity instanceof MainActivity)) {
+            ((ImageDisplayActivity)activity).evp1.setCurrentItem(position);
+            ((ImageDisplayActivity)activity).miniGalleryRecyclerView.getLayoutManager().scrollToPosition(position);
+        }
+        else if(selectedItems.get() > 0) { // multi select mode
             onGalleryItemLongClicked(position);
         }
         else {
@@ -130,6 +134,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public boolean onGalleryItemLongClicked(int position) {
+        if(!(activity instanceof MainActivity)) return true;
         boolean targetSelectionStatus = objects.get(position).toggleSelection();
         if(targetSelectionStatus) selectedItems.incrementAndGet();
         else selectedItems.decrementAndGet();
