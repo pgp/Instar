@@ -1,10 +1,12 @@
 package it.pgp.instar.adapters;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,6 +37,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public static int spans = 5;
     public static final int MIN_SPANS = 3;
     public static final int MAX_SPANS = 7;
+    public final String basePath;
 
     public int overridePx;
 
@@ -149,27 +152,37 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         }
     }
 
-    public final MainActivity activity;
+    public final Activity activity;
     public final List<GalleryItem> objects;
     protected LayoutInflater inflater;
 
-    private GalleryAdapter(@NonNull MainActivity activity, @NonNull List<GalleryItem> objects) {
+    private GalleryAdapter(@NonNull Activity activity, @NonNull List<GalleryItem> objects, String basePath) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.objects = objects;
-        overridePx = activity.current == MainActivity.GalleryOrientation.VERTICAL ?
-                activity.screenW / spans :
-                activity.screenH / spans
-        ;
+        this.basePath = basePath;
+        if(activity instanceof MainActivity) {
+            MainActivity a = (MainActivity) activity;
+            overridePx = a.current == MainActivity.GalleryOrientation.VERTICAL ?
+                    a.screenW / spans :
+                    a.screenH / spans
+            ;
+        }
+        else {
+            DisplayMetrics dM = MainActivity.getDisplaySizes(activity);
+            overridePx = dM.heightPixels / MAX_SPANS;
+        }
         setPlaceholders();
-        instance = this;
+
+        if(activity instanceof MainActivity)
+            instance = this;
     }
 
-    public static GalleryAdapter createAdapter(MainActivity activity, String basePath) {
+    public static GalleryAdapter createAdapter(Activity activity, String basePath) {
         File[] ff = new File(basePath).listFiles();
         if(ff == null) return null;
         List<GalleryItem> l = new ArrayList<>();
         for(File f: ff) l.add(new GalleryItem(f.getAbsolutePath()));
-        return new GalleryAdapter(activity, l);
+        return new GalleryAdapter(activity, l, basePath);
     }
 }

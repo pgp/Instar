@@ -3,6 +3,7 @@ package it.pgp.instar;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -167,6 +168,12 @@ public class MainActivity extends Activity {
     RelativeLayout rl;
     public int screenH, screenW;
 
+    public static DisplayMetrics getDisplaySizes(Activity activity) {
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        activity.getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        return displayMetrics;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -175,8 +182,7 @@ public class MainActivity extends Activity {
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        DisplayMetrics displayMetrics = getDisplaySizes(this);
         screenH = displayMetrics.heightPixels;
         screenW = displayMetrics.widthPixels;
         checkStoragePermissions();

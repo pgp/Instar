@@ -12,8 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
 
+import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.ortiz.touchview.TouchImageView;
 
 import java.util.List;
@@ -27,6 +30,8 @@ public class ImageDisplayActivity extends Activity {
 
     String filepath;
     TextView filepath1;
+    RecyclerView miniGalleryRecyclerView;
+    FastScroller fastScroller;
 
     final AtomicBoolean fullScreen = new AtomicBoolean(false);
 
@@ -45,7 +50,10 @@ public class ImageDisplayActivity extends Activity {
             String filepath = objects.get(position).filepath;
             v.setImageBitmap(BitmapFactory.decodeFile(filepath));
             v.setOnClickListener(w->{
-                filepath1.setVisibility(filepath1.getVisibility()==View.GONE?View.VISIBLE:View.GONE);
+                for(View k : new View[]{filepath1,miniGalleryRecyclerView,fastScroller}) {
+                    k.setVisibility(k.getVisibility()==View.GONE?View.VISIBLE:View.GONE);
+                }
+
                 if(!fullScreen.get()) {
                     window.clearFlags(WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN);
                     window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -101,5 +109,18 @@ public class ImageDisplayActivity extends Activity {
         filepath1.setText(filepath);
         window = getWindow();
         defaultUIVisibility = window.getDecorView().getSystemUiVisibility();
+
+        miniGalleryRecyclerView = findViewById(R.id.miniGalleryRecyclerView);
+        miniGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this,1,GridLayoutManager.HORIZONTAL,false));
+        miniGalleryRecyclerView.setHasFixedSize(true);
+
+        // TODO have to further modify adapter, short/long click listeners must not be shared, no multi select mode should be allowed here)
+        // TODO add scroll on current position after click, on both viewpager <-> mini gallery
+        // TODO onclick listener in mini gallery should not start a new activity, just re-use existing one
+        miniGalleryRecyclerView.setAdapter(GalleryAdapter.createAdapter(this,GalleryAdapter.instance.basePath));
+        fastScroller = findViewById(R.id.fastScroll);
+        fastScroller.setRecyclerView(miniGalleryRecyclerView);
+        miniGalleryRecyclerView.bringToFront();
+        fastScroller.bringToFront();
     }
 }

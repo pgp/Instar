@@ -17,4 +17,18 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/miniGalleryRecyclerView"
+        android:orientation="horizontal"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <com.futuremind.recyclerviewfastscroll.FastScroller
+        android:id="@+id/fastScroll"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true" />
+
 </RelativeLayout>
