@@ -12,9 +12,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.ortiz.touchview.TouchImageView;
@@ -34,6 +35,7 @@ public class ImageDisplayActivity extends Activity {
     FastScroller fastScroller;
 
     final AtomicBoolean fullScreen = new AtomicBoolean(false);
+    private LinearLayoutManager lm;
 
     private class TouchImageAdapter extends PagerAdapter {
 
@@ -112,17 +114,30 @@ public class ImageDisplayActivity extends Activity {
         defaultUIVisibility = window.getDecorView().getSystemUiVisibility();
 
         miniGalleryRecyclerView = findViewById(R.id.miniGalleryRecyclerView);
-        miniGalleryRecyclerView.setLayoutManager(new GridLayoutManager(this,1,GridLayoutManager.HORIZONTAL,false));
+        lm = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+        miniGalleryRecyclerView.setLayoutManager(lm);
         miniGalleryRecyclerView.setHasFixedSize(true);
 
-        // TODO have to further modify adapter, short/long click listeners must not be shared, no multi select mode should be allowed here)
-        // TODO add scroll on current position after click, on both viewpager <-> mini gallery
-        // TODO onclick listener in mini gallery should not start a new activity, just re-use existing one
         miniGalleryRecyclerView.setAdapter(GalleryAdapter.createAdapter(this,GalleryAdapter.instance.basePath));
         fastScroller = findViewById(R.id.fastScroll);
         fastScroller.setRecyclerView(miniGalleryRecyclerView);
         miniGalleryRecyclerView.bringToFront();
         fastScroller.bringToFront();
-        miniGalleryRecyclerView.getLayoutManager().scrollToPosition(pos);
+        evp1.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+
+            }
+
+            @Override
+            public void onPageSelected(int position) {
+                lm.scrollToPosition(position+2);
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+
+            }
+        });
     }
 }
