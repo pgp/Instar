@@ -1,6 +1,5 @@
 package it.pgp.instar.adapters;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,9 +10,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -43,6 +42,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     public final Drawable[] currentPlaceholders = {null,null};
 
+    public boolean multiselect = false;
     public final AtomicInteger selectedItems = new AtomicInteger(0);
 
     @NonNull
@@ -82,7 +82,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 .transition(drawableTransitionOptions)
                 .into(holder.imageView);
 
-        if(selectedItems.get() > 0)
+        if(multiselect)
             holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
 
         holder.bind(position,GalleryAdapter.this);
@@ -123,7 +123,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
             ((ImageDisplayActivity)activity).evp1.setCurrentItem(position);
             ((ImageDisplayActivity)activity).miniGalleryRecyclerView.getLayoutManager().scrollToPosition(position);
         }
-        else if(selectedItems.get() > 0) { // multi select mode
+        else if(multiselect) {
             onGalleryItemLongClicked(position);
         }
         else {
@@ -135,10 +135,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     public boolean onGalleryItemLongClicked(int position) {
         if(!(activity instanceof MainActivity)) return true;
+        if(!multiselect) {
+            multiselect = true;
+            activity.getSupportActionBar().show();
+        }
+
         boolean targetSelectionStatus = objects.get(position).toggleSelection();
         if(targetSelectionStatus) selectedItems.incrementAndGet();
         else selectedItems.decrementAndGet();
-        Toast.makeText(activity, "Long click position "+position, Toast.LENGTH_SHORT).show();
+
         notifyDataSetChanged();
         return true;
     }
@@ -157,11 +162,11 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         }
     }
 
-    public final Activity activity;
+    public final AppCompatActivity activity;
     public final List<GalleryItem> objects;
     protected LayoutInflater inflater;
 
-    private GalleryAdapter(@NonNull Activity activity, @NonNull List<GalleryItem> objects, String basePath) {
+    private GalleryAdapter(@NonNull AppCompatActivity activity, @NonNull List<GalleryItem> objects, String basePath) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.objects = objects;
@@ -183,7 +188,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
             instance = this;
     }
 
-    public static GalleryAdapter createAdapter(Activity activity, String basePath) {
+    public static GalleryAdapter createAdapter(AppCompatActivity activity, String basePath) {
         File[] ff = new File(basePath).listFiles();
         if(ff == null) return null;
         List<GalleryItem> l = new ArrayList<>();

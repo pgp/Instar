@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.PagerAdapter;
@@ -27,7 +28,7 @@ import it.pgp.instar.adapters.ExtendedViewPager;
 import it.pgp.instar.adapters.GalleryAdapter;
 import it.pgp.instar.adapters.GalleryItem;
 
-public class ImageDisplayActivity extends Activity {
+public class ImageDisplayActivity extends AppCompatActivity {
 
     String filepath;
     TextView filepath1;
@@ -103,6 +104,8 @@ public class ImageDisplayActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_image_display);
         filepath1 = findViewById(R.id.filepath1);
         evp1 = findViewById(R.id.evp1);

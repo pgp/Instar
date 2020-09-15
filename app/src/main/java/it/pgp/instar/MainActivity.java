@@ -3,7 +3,6 @@ package it.pgp.instar;
 import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -12,12 +11,15 @@ import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ScaleGestureDetector;
 import android.view.View;
 import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -28,7 +30,7 @@ import com.futuremind.recyclerviewfastscroll.FastScroller;
 
 import it.pgp.instar.adapters.GalleryAdapter;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     LayoutInflater inflater;
     RecyclerView mainGalleryView;
@@ -72,7 +74,6 @@ public class MainActivity extends Activity {
     public GalleryOrientation current = GalleryOrientation.VERTICAL;
 
     public static final int STORAGE_PERM_ID = 123;
-    private static final int numberOfColumns = 3;
 
     public void checkStoragePermissions() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M &&
@@ -175,9 +176,33 @@ public class MainActivity extends Activity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch(item.getItemId()) {
+            case R.id.all:
+                GalleryAdapter.instance.selectAll();
+                break;
+            case R.id.none:
+                GalleryAdapter.instance.clearSelection();
+                break;
+            case R.id.invert:
+                GalleryAdapter.instance.invertSelection();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
@@ -196,7 +221,7 @@ public class MainActivity extends Activity {
 
     @Override
     public void onBackPressed() {
-        if(GalleryAdapter.instance != null && GalleryAdapter.instance.selectedItems.get()>0)
+        if(GalleryAdapter.instance != null && GalleryAdapter.instance.multiselect)
             exitMultiSelectMode();
         else super.onBackPressed();
     }
@@ -207,7 +232,11 @@ public class MainActivity extends Activity {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
         bld.setTitle("Exit multi select mode? Current selection will be lost");
         bld.setNegativeButton("No", alertDialogNoOpsChoice);
-        bld.setPositiveButton("Yes", (dialog, which) -> GalleryAdapter.instance.clearSelection());
+        bld.setPositiveButton("Yes", (dialog, which) -> {
+            GalleryAdapter.instance.multiselect = false;
+            GalleryAdapter.instance.clearSelection();
+            getSupportActionBar().hide();
+        });
         AlertDialog alertDialog = bld.create();
         alertDialog.show();
     }
