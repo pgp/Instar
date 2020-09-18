@@ -167,7 +167,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     RelativeLayout rl;
-    public int screenH, screenW;
+    public static int screenH, screenW;
 
     public static DisplayMetrics getDisplaySizes(Activity activity) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -203,13 +203,13 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getSupportActionBar().hide();
+        DisplayMetrics displayMetrics = getDisplaySizes(this);
+        screenH = displayMetrics.heightPixels;
+        screenW = displayMetrics.widthPixels;
         setContentView(R.layout.activity_main);
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
-        DisplayMetrics displayMetrics = getDisplaySizes(this);
-        screenH = displayMetrics.heightPixels;
-        screenW = displayMetrics.widthPixels;
         checkStoragePermissions();
     }
 
