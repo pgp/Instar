@@ -1,6 +1,5 @@
 package it.pgp.instar;
 
-import android.app.Activity;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.view.View;
@@ -24,6 +23,7 @@ import com.ortiz.touchview.TouchImageView;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.ExtendedViewPager;
 import it.pgp.instar.adapters.GalleryAdapter;
 import it.pgp.instar.adapters.GalleryItem;
@@ -53,7 +53,7 @@ public class ImageDisplayActivity extends AppCompatActivity {
             String filepath = objects.get(position).filepath;
             v.setImageBitmap(BitmapFactory.decodeFile(filepath));
             v.setOnClickListener(w->{
-                for(View k : new View[]{filepath1,miniGalleryRecyclerView,fastScroller}) {
+                for(View k : new View[]{filepath1,miniGalleryRecyclerView}) {
                     k.setVisibility(k.getVisibility()==View.GONE?View.VISIBLE:View.GONE);
                 }
 
@@ -123,9 +123,10 @@ public class ImageDisplayActivity extends AppCompatActivity {
 
         miniGalleryRecyclerView.setAdapter(GalleryAdapter.createAdapter(this,GalleryAdapter.instance.basePath));
         fastScroller = findViewById(R.id.fastScroll);
+        fastScroller.setViewProvider(new CustomScrollerViewProvider());
         fastScroller.setRecyclerView(miniGalleryRecyclerView);
-        miniGalleryRecyclerView.bringToFront();
-        fastScroller.bringToFront();
+//        miniGalleryRecyclerView.bringToFront();
+//        fastScroller.bringToFront();
         evp1.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
