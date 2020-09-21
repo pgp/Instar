@@ -184,17 +184,17 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {
-            case R.id.all:
-                GalleryAdapter.instance.selectAll();
-                break;
-            case R.id.none:
-                GalleryAdapter.instance.clearSelection();
-                break;
-            case R.id.invert:
-                GalleryAdapter.instance.invertSelection();
-                break;
-        }
+//        switch(item.getItemId()) {
+//            case R.id.all:
+//                GalleryAdapter.instance.selectAll();
+//                break;
+//            case R.id.none:
+//                GalleryAdapter.instance.clearSelection();
+//                break;
+//            case R.id.invert:
+//                GalleryAdapter.instance.invertSelection();
+//                break;
+//        }
         return true;
     }
 
@@ -207,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
         screenH = displayMetrics.heightPixels;
         screenW = displayMetrics.widthPixels;
         setContentView(R.layout.activity_main);
-        rl = findViewById(R.id.rootLayout);
+//        rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
         checkStoragePermissions();

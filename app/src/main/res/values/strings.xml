@@ -1,9 +1,10 @@
 <resources>
-    <string name="app_name">Instar</string>
-    <string name="storage_perm_denied">Storage permission denied</string>
-    <string name="storage_perm_granted">Storage permission granted</string>
-    <string name="exit">Exit</string>
-    <string name="all">All</string>
-    <string name="none">None</string>
-    <string name="invert">Invert</string>
+    <string name="app_name">RecyclerViewFastScroll</string>
+    <string name="action_settings">Settings</string>
+    <string name="fragment_title_default">Default</string>
+    <string name="fragment_title_styled">Styled</string>
+    <string name="fragment_title_horizontal">Horizontal</string>
+    <string name="fragment_title_custom">Custom view</string>
+    <string name="storage_perm_denied">Denied</string>
+    <string name="storage_perm_granted">Granted</string>
 </resources>
