@@ -28,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 
+import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.GalleryAdapter;
 
 public class MainActivity extends AppCompatActivity {
@@ -163,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
         mainGalleryView.setAdapter(ga[0]);
         mainGalleryView.addOnScrollListener(glideScrollListener);
+        fastScroller.setViewProvider(new CustomScrollerViewProvider());
         fastScroller.setRecyclerView(mainGalleryView);
     }
 
