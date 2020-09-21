@@ -45,14 +45,14 @@ public class CustomScrollerViewProvider extends ScrollerViewProvider {
         bubble.setVisibility(View.INVISIBLE);
         bubble.setGravity(Gravity.CENTER);
         bubble.setTextColor(ContextCompat.getColor(getContext(), android.R.color.white));
-        getScroller().addScrollerListener(new RecyclerViewScrollListener.ScrollerListener() {
-            @Override
-            public void onScroll(float relativePos) {
-                //Yeah, yeah, but we were so preoccupied with whether or not we could,
-                //that we didn't stop to think if we should.
-                bubble.setRotation(relativePos*360f);
-            }
-        });
+//        getScroller().addScrollerListener(new RecyclerViewScrollListener.ScrollerListener() {
+//            @Override
+//            public void onScroll(float relativePos) {
+//                //Yeah, yeah, but we were so preoccupied with whether or not we could,
+//                //that we didn't stop to think if we should.
+//                bubble.setRotation(relativePos*360f);
+//            }
+//        });
         return bubble;
     }
 
