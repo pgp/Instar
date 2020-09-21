@@ -19,6 +19,7 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -29,7 +30,7 @@ import it.pgp.instar.ImageDisplayActivity;
 import it.pgp.instar.MainActivity;
 import it.pgp.instar.R;
 
-public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryItemViewHolder> {
+public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryItemViewHolder> implements SectionTitleProvider {
 
     public static GalleryAdapter instance;
 
@@ -146,6 +147,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
         notifyDataSetChanged();
         return true;
+    }
+
+    @Override
+    public String getSectionTitle(int position) {
+        String filepath = objects.get(position).filepath;
+        int slashIdx = filepath.lastIndexOf('/');
+        if(slashIdx > 0 && filepath.length()>slashIdx)
+            return filepath.substring(slashIdx+1,slashIdx+2);
+        else return "";
     }
 
     public static class GalleryItemViewHolder extends RecyclerView.ViewHolder {
