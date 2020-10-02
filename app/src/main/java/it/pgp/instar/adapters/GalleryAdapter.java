@@ -181,15 +181,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         this.activity = activity;
         this.objects = objects;
         this.basePath = basePath;
+        DisplayMetrics dM = MainActivity.getDisplaySizes(activity);
         if(activity instanceof MainActivity) {
             MainActivity a = (MainActivity) activity;
             overridePx = a.current == MainActivity.GalleryOrientation.VERTICAL ?
-                    a.screenW / spans :
-                    a.screenH / spans
+                    dM.widthPixels / spans :
+                    dM.heightPixels / spans
             ;
         }
         else {
-            DisplayMetrics dM = MainActivity.getDisplaySizes(activity);
             overridePx = dM.heightPixels / MAX_SPANS;
         }
         setPlaceholders();
@@ -204,5 +204,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         List<GalleryItem> l = new ArrayList<>();
         for(File f: ff) l.add(new GalleryItem(f.getAbsolutePath()));
         return new GalleryAdapter(activity, l, basePath);
+    }
+
+    public static GalleryAdapter from(GalleryAdapter old) {
+        return new GalleryAdapter(old.activity, old.objects, old.basePath);
     }
 }

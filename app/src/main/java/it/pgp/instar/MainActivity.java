@@ -127,7 +127,7 @@ public class MainActivity extends AppCompatActivity {
         refreshAdapter();
     }
 
-    public void refreshAdapter() {
+    public void refreshAdapter(Object... refreshOnlyViews) {
         rl.removeAllViews();
         inflater.inflate(current.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
@@ -138,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
         mainGalleryView.setLayoutManager(new GridLayoutManager(this, GalleryAdapter.spans, current.orientation, false));
         mainGalleryView.setHasFixedSize(true);
 
+        if(refreshOnlyViews.length == 0)
         ga[0] = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
+        else ga[0] = GalleryAdapter.from(ga[0]);
         if(ga[0] == null) {
             Toast.makeText(this, "Unable to access DCIM/Camera, exiting...", Toast.LENGTH_SHORT).show();
             finishAffinity();

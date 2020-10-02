@@ -15,6 +15,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import it.pgp.instar.MainActivity;
+
 public class PaddingManager {
 
     public static boolean hidden = true;
@@ -296,7 +298,7 @@ public class PaddingManager {
             @Override
             public void onDisplayChanged(int displayId) {
                 Toast.makeText(activity, "Current orientation: "+activity.getWindowManager().getDefaultDisplay().getRotation(), Toast.LENGTH_SHORT).show();
-                adjustPaddings(viewsTop,viewsBottom);
+                ((MainActivity)activity).refreshAdapter(true);
             }
         };
 
