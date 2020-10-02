@@ -138,7 +138,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         if(!(activity instanceof MainActivity)) return true;
         if(!multiselect) {
             multiselect = true;
-            activity.getSupportActionBar().show();
+            ((MainActivity)activity).toggleActionBar(false);
         }
 
         boolean targetSelectionStatus = objects.get(position).toggleSelection();

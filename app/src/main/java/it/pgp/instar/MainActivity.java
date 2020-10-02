@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
@@ -21,6 +23,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,14 +31,23 @@ import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 
+import java.util.Arrays;
+import java.util.List;
+
 import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.GalleryAdapter;
+import it.pgp.instar.utils.PaddingManager;
+
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
+import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
 public class MainActivity extends AppCompatActivity {
 
     LayoutInflater inflater;
     RecyclerView mainGalleryView;
     FastScroller fastScroller;
+    List<View> viewList;
     final GalleryAdapter[] ga = {null};
     RequestManager GlideR;
 
@@ -121,6 +133,7 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(current.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
         fastScroller = findViewById(R.id.fastScroll);
+        viewList = Arrays.asList(mainGalleryView,fastScroller,findViewById(R.id.switchButton),findViewById(R.id.reloadImgCacheButton));
 
         mainGalleryView.setLayoutManager(new GridLayoutManager(this, GalleryAdapter.spans, current.orientation, false));
         mainGalleryView.setHasFixedSize(true);
@@ -166,10 +179,17 @@ public class MainActivity extends AppCompatActivity {
         mainGalleryView.addOnScrollListener(glideScrollListener);
         fastScroller.setViewProvider(new CustomScrollerViewProvider());
         fastScroller.setRecyclerView(mainGalleryView);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            rl.setSystemUiVisibility(SYSTEM_UI_FLAG_LAYOUT_STABLE |
+                    SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
+                    SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        }
+        paddingManager.registerDisplayListener(viewList);
     }
 
     RelativeLayout rl;
     public int screenH, screenW;
+    public PaddingManager paddingManager;
 
     public static DisplayMetrics getDisplaySizes(Activity activity) {
         DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -203,8 +223,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getSupportActionBar().hide();
+        requestWindowFeature(Window.FEATURE_ACTION_BAR_OVERLAY);
+        getSupportActionBar().setBackgroundDrawable(new ColorDrawable(Color.argb(128, 0, 0, 0)));
+        paddingManager = new PaddingManager(this);
+        if(PaddingManager.hidden) getSupportActionBar().hide();
         setContentView(R.layout.activity_main);
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
@@ -212,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
         DisplayMetrics displayMetrics = getDisplaySizes(this);
         screenH = displayMetrics.heightPixels;
         screenW = displayMetrics.widthPixels;
+
         checkStoragePermissions();
     }
 
@@ -237,7 +260,7 @@ public class MainActivity extends AppCompatActivity {
         bld.setPositiveButton("Yes", (dialog, which) -> {
             GalleryAdapter.instance.multiselect = false;
             GalleryAdapter.instance.clearSelection();
-            getSupportActionBar().hide();
+            toggleActionBar(true);
         });
         AlertDialog alertDialog = bld.create();
         alertDialog.show();
@@ -257,5 +280,14 @@ public class MainActivity extends AppCompatActivity {
                 }).start());
         AlertDialog alertDialog = bld.create();
         alertDialog.show();
+    }
+
+    public void toggleActionBar(boolean hidden) {
+        PaddingManager.hidden = hidden;
+        if(PaddingManager.hidden)
+            getSupportActionBar().hide();
+        else
+            getSupportActionBar().show();
+        paddingManager.adjustPaddings(viewList);
     }
 }
