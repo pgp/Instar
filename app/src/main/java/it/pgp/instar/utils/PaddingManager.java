@@ -18,9 +18,11 @@ import java.util.Map;
 public class PaddingManager {
 
     public static boolean hidden = true;
-    // FIXME insetsPadding values work only for views that are aligned on main layout's top (TODO generalize for left, right and bottom as well)
+    // FIXME insetsPadding values work only for views that are aligned on main layout's top or bottom (TODO generalize for left, right and refactor code)
     public static Map<Integer, Map<String, Integer>> insetsPadding = new HashMap<>();
+    public static Map<Integer, Map<String, Integer>> insetsPaddingBottomViews = new HashMap<>();
     public static Map<Integer, Map<String, Integer>> hiddenInsetsPadding = new HashMap<>();
+    public static Map<Integer, Map<String, Integer>> hiddenInsetsPaddingBottomViews = new HashMap<>();
     public static final Handler h = new Handler();
 
     public final AppCompatActivity activity;
@@ -99,6 +101,68 @@ public class PaddingManager {
                                 "right",0
                         )
                 );
+
+                insetsPaddingBottomViews = Utils.mapOf(
+                        Surface.ROTATION_0,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",pxFromDp(NAVBAR_PADDING),
+                                "right",0
+                        ),
+                        Surface.ROTATION_90,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",0,
+                                "right",pxFromDp(NAVBAR_PADDING)
+                        ),
+                        Surface.ROTATION_180,// not always called, have,enable setting first
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",pxFromDp(NAVBAR_PADDING),
+                                "right",0
+                        ),
+                        Surface.ROTATION_270,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",pxFromDp(NAVBAR_PADDING),
+                                "bottom",0,
+                                "right",0
+                        )
+                );
+
+                hiddenInsetsPaddingBottomViews = Utils.mapOf(
+                        Surface.ROTATION_0,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",pxFromDp(NAVBAR_PADDING),
+                                "right",0
+                        ),
+                        Surface.ROTATION_90,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",0,
+                                "right",pxFromDp(NAVBAR_PADDING)
+                        ),
+                        Surface.ROTATION_180, // not always called, have,enable setting first
+                        Utils.mapOf(
+                                "top",0,
+                                "left",0,
+                                "bottom",pxFromDp(NAVBAR_PADDING),
+                                "right",0
+                        ),
+                        Surface.ROTATION_270,
+                        Utils.mapOf(
+                                "top",0,
+                                "left",pxFromDp(NAVBAR_PADDING),
+                                "bottom",0,
+                                "right",0
+                        )
+                );
             }
             else {
                 insetsPadding = Utils.mapOf(
@@ -163,18 +227,21 @@ public class PaddingManager {
                                 "right",0
                         )
                 );
+
+                insetsPaddingBottomViews = insetsPadding;
+                hiddenInsetsPaddingBottomViews = hiddenInsetsPadding;
             }
         }
     }
 
 
-    public void adjustPaddings(List<View> views) {
+    public void adjustPaddings(List<View> viewsTop, List<View> viewsBottom) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             createMaps();
 
             int degrees = activity.getWindowManager().getDefaultDisplay().getRotation();
 
-            for(View v : views) {
+            for(View v : viewsTop) {
                 if (hidden)
                     v.setPadding(
                             hiddenInsetsPadding.get(degrees).get("left"),
@@ -190,12 +257,29 @@ public class PaddingManager {
                             insetsPadding.get(degrees).get("bottom")
                     );
             }
+
+            for(View v : viewsBottom) {
+                if (hidden)
+                    v.setPadding(
+                            hiddenInsetsPaddingBottomViews.get(degrees).get("left"),
+                            hiddenInsetsPaddingBottomViews.get(degrees).get("top"),
+                            hiddenInsetsPaddingBottomViews.get(degrees).get("right"),
+                            hiddenInsetsPaddingBottomViews.get(degrees).get("bottom")
+                    );
+                else
+                    v.setPadding(
+                            insetsPaddingBottomViews.get(degrees).get("left"),
+                            insetsPaddingBottomViews.get(degrees).get("top"),
+                            insetsPaddingBottomViews.get(degrees).get("right"),
+                            insetsPaddingBottomViews.get(degrees).get("bottom")
+                    );
+            }
         }
     }
 
 
-    public void registerDisplayListener(List<View> views) {
-        adjustPaddings(views);
+    public void registerDisplayListener(List<View> viewsTop, List<View> viewsBottom) {
+        adjustPaddings(viewsTop, viewsBottom);
 
         dm = (DisplayManager) activity.getSystemService(AppCompatActivity.DISPLAY_SERVICE);
 
@@ -212,7 +296,7 @@ public class PaddingManager {
             @Override
             public void onDisplayChanged(int displayId) {
                 Toast.makeText(activity, "Current orientation: "+activity.getWindowManager().getDefaultDisplay().getRotation(), Toast.LENGTH_SHORT).show();
-                adjustPaddings(views);
+                adjustPaddings(viewsTop,viewsBottom);
             }
         };
 

@@ -23,7 +23,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -47,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
     LayoutInflater inflater;
     RecyclerView mainGalleryView;
     FastScroller fastScroller;
-    List<View> viewList;
+    List<View> viewListTop, viewListBottom;
     final GalleryAdapter[] ga = {null};
     RequestManager GlideR;
 
@@ -133,7 +132,8 @@ public class MainActivity extends AppCompatActivity {
         inflater.inflate(current.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
         fastScroller = findViewById(R.id.fastScroll);
-        viewList = Arrays.asList(mainGalleryView,fastScroller,findViewById(R.id.switchButton),findViewById(R.id.reloadImgCacheButton));
+        viewListTop = Arrays.asList(mainGalleryView,fastScroller);
+        viewListBottom = Arrays.asList(findViewById(R.id.switchButton),findViewById(R.id.reloadImgCacheButton));
 
         mainGalleryView.setLayoutManager(new GridLayoutManager(this, GalleryAdapter.spans, current.orientation, false));
         mainGalleryView.setHasFixedSize(true);
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
                     SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN |
                     SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
-        paddingManager.registerDisplayListener(viewList);
+        paddingManager.registerDisplayListener(viewListTop, viewListBottom);
     }
 
     RelativeLayout rl;
@@ -288,6 +288,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         else
             getSupportActionBar().show();
-        paddingManager.adjustPaddings(viewList);
+        paddingManager.adjustPaddings(viewListTop, viewListBottom);
     }
 }
