@@ -232,6 +232,9 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public static GalleryAdapter from(GalleryAdapter old) {
-        return new GalleryAdapter(old.activity, old.objects, old.basePath);
+        GalleryAdapter ga = new GalleryAdapter(old.activity, old.objects, old.basePath);
+        ga.multiselect = old.multiselect;
+        ga.selectedItems.set(old.selectedItems.get());
+        return ga;
     }
 }

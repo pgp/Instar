@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView mainGalleryView;
     FastScroller fastScroller;
     List<View> viewListTop, viewListBottom;
-    final GalleryAdapter[] ga = {null};
+    GalleryAdapter ga;
     RequestManager GlideR;
 
     private final RecyclerView.OnScrollListener glideScrollListener = new RecyclerView.OnScrollListener() {
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void switchGalleryOrientation(View unused) {
         current = current.next();
-        refreshAdapter();
+        refreshAdapter(true);
     }
 
     public void refreshAdapter(Object... refreshOnlyViews) {
@@ -139,10 +139,10 @@ public class MainActivity extends AppCompatActivity {
         mainGalleryView.setHasFixedSize(true);
 
         if(refreshOnlyViews.length == 0)
-        ga[0] = GalleryAdapter.createAdapter(this,
+        ga = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
-        else ga[0] = GalleryAdapter.from(ga[0]);
-        if(ga[0] == null) {
+        else ga = GalleryAdapter.from(ga);
+        if(ga == null) {
             Toast.makeText(this, "Unable to access DCIM/Camera, exiting...", Toast.LENGTH_SHORT).show();
             finishAffinity();
             return;
@@ -177,7 +177,7 @@ public class MainActivity extends AppCompatActivity {
             return false;
         });
 
-        mainGalleryView.setAdapter(ga[0]);
+        mainGalleryView.setAdapter(ga);
         mainGalleryView.addOnScrollListener(glideScrollListener);
         fastScroller.setViewProvider(new CustomScrollerViewProvider());
         fastScroller.setRecyclerView(mainGalleryView);
