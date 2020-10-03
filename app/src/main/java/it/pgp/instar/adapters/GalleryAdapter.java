@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
+import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -176,21 +177,45 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public final List<GalleryItem> objects;
     protected LayoutInflater inflater;
 
+    // this workaround is needed because, in DisplayManager.DisplayListener onDisplayChanged,
+    // we have old real metrics, not current ones (that is, width and height are inverted if rotation diff is not 180°)
+    private int[] getActualScreenDimsWrtOrientation(@NonNull AppCompatActivity activity) {
+        DisplayMetrics dM = MainActivity.getDisplaySizes(activity);
+        int currentRotation = activity.getWindowManager().getDefaultDisplay().getRotation();
+//        int[] whr = new int[3]; // width, heigth, rotation
+        int[] wh = new int[2]; // width, heigth, rotation
+        switch(currentRotation) {
+            case Surface.ROTATION_0:
+            case Surface.ROTATION_180: // portrait modes, width is min, heigth is max
+                wh[0] = Math.min(dM.widthPixels, dM.heightPixels);
+                wh[1] = Math.max(dM.widthPixels, dM.heightPixels);
+                break;
+            case Surface.ROTATION_90: // landscape modes, width is max, heigth is min
+            case Surface.ROTATION_270:
+                wh[0] = Math.max(dM.widthPixels, dM.heightPixels);
+                wh[1] = Math.min(dM.widthPixels, dM.heightPixels);
+                break;
+
+        }
+//        whr[2] = currentRotation;
+        return wh;
+    }
+
     private GalleryAdapter(@NonNull AppCompatActivity activity, @NonNull List<GalleryItem> objects, String basePath) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
         this.objects = objects;
         this.basePath = basePath;
-        DisplayMetrics dM = MainActivity.getDisplaySizes(activity);
+        int[] wh = getActualScreenDimsWrtOrientation(activity);
         if(activity instanceof MainActivity) {
             MainActivity a = (MainActivity) activity;
             overridePx = a.current == MainActivity.GalleryOrientation.VERTICAL ?
-                    dM.widthPixels / spans :
-                    dM.heightPixels / spans
+                    wh[0] / spans :
+                    wh[1] / spans
             ;
         }
         else {
-            overridePx = dM.heightPixels / MAX_SPANS;
+            overridePx = wh[1] / MAX_SPANS;
         }
         setPlaceholders();
 
