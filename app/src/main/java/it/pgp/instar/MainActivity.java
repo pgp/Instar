@@ -190,7 +190,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     RelativeLayout rl;
-    public int screenH, screenW;
     public PaddingManager paddingManager;
 
     public static DisplayMetrics getDisplaySizes(Activity activity) {
@@ -233,9 +232,6 @@ public class MainActivity extends AppCompatActivity {
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
-        DisplayMetrics displayMetrics = getDisplaySizes(this);
-        screenH = displayMetrics.heightPixels;
-        screenW = displayMetrics.widthPixels;
 
         checkStoragePermissions();
     }
