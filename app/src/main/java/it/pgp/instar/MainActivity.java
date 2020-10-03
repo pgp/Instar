@@ -290,6 +290,6 @@ public class MainActivity extends AppCompatActivity {
             getSupportActionBar().hide();
         else
             getSupportActionBar().show();
-        paddingManager.adjustPaddings(viewListTop, viewListBottom);
+        refreshAdapter(true);
     }
 }
