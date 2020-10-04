@@ -17,8 +17,10 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ScaleGestureDetector;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -151,24 +153,44 @@ public class MainActivity extends AppCompatActivity {
         ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                if (detector.getCurrentSpan() > 120 && detector.getTimeDelta() > 200) {
-                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
-                        Toast.makeText(MainActivity.this, "Less than 1", Toast.LENGTH_SHORT).show();
-                        GalleryAdapter.spans++;
-                        if(GalleryAdapter.spans > GalleryAdapter.MAX_SPANS)
-                            GalleryAdapter.spans = GalleryAdapter.MAX_SPANS;
-                        refreshAdapter();
-                        return true;
-                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
-                        Toast.makeText(MainActivity.this, "Greater than 1", Toast.LENGTH_SHORT).show();
-                        GalleryAdapter.spans--;
-                        if(GalleryAdapter.spans < GalleryAdapter.MIN_SPANS)
-                            GalleryAdapter.spans = GalleryAdapter.MIN_SPANS;
-                        refreshAdapter();
-                        return true;
-                    }
-                }
-                return false;
+                tv.setText(Math.random()+"");
+//                if (detector.getCurrentSpan() > 120 && detector.getTimeDelta() > 200) {
+//                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+//                        Toast.makeText(MainActivity.this, "Less than 1", Toast.LENGTH_SHORT).show();
+//                        GalleryAdapter.spans++;
+//                        if(GalleryAdapter.spans > GalleryAdapter.MAX_SPANS)
+//                            GalleryAdapter.spans = GalleryAdapter.MAX_SPANS;
+//                        refreshAdapter(true);
+//                        return true;
+//                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+//                        Toast.makeText(MainActivity.this, "Greater than 1", Toast.LENGTH_SHORT).show();
+//                        GalleryAdapter.spans--;
+//                        if(GalleryAdapter.spans < GalleryAdapter.MIN_SPANS)
+//                            GalleryAdapter.spans = GalleryAdapter.MIN_SPANS;
+//                        refreshAdapter(true);
+//                        return true;
+//                    }
+//                }
+                return true;
+            }
+
+            TextView tv;
+
+            @Override
+            public boolean onScaleBegin(ScaleGestureDetector detector) {
+                tv = new TextView(MainActivity.this);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                tv.setLayoutParams(params);
+                rl.addView(tv);
+//                Toast.makeText(MainActivity.this, "Start", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+
+            @Override
+            public void onScaleEnd(ScaleGestureDetector detector) {
+                rl.removeView(tv);
+//                Toast.makeText(MainActivity.this, "End", Toast.LENGTH_SHORT).show();
             }
         });
 
