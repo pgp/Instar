@@ -20,7 +20,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -38,6 +37,7 @@ import java.util.List;
 import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.GalleryAdapter;
 import it.pgp.instar.utils.PaddingManager;
+import it.pgp.instar.views.ScaleInfoView;
 
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
@@ -58,11 +58,11 @@ public class MainActivity extends AppCompatActivity {
             switch (newState) {
                 case RecyclerView.SCROLL_STATE_DRAGGING:
                     GlideR.pauseRequests();
-                    Log.e("GlideR","Paused");
+                    Log.d("GlideR","Paused");
                     break;
                 case RecyclerView.SCROLL_STATE_IDLE:
                     GlideR.resumeRequests();
-                    Log.e("GlideR","Resumed");
+                    Log.d("GlideR","Resumed");
                     break;
             }
         }
@@ -153,44 +153,40 @@ public class MainActivity extends AppCompatActivity {
         ScaleGestureDetector mScaleGestureDetector = new ScaleGestureDetector(this, new ScaleGestureDetector.SimpleOnScaleGestureListener() {
             @Override
             public boolean onScale(ScaleGestureDetector detector) {
-                tv.setText(Math.random()+"");
-//                if (detector.getCurrentSpan() > 120 && detector.getTimeDelta() > 200) {
-//                    if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
-//                        Toast.makeText(MainActivity.this, "Less than 1", Toast.LENGTH_SHORT).show();
-//                        GalleryAdapter.spans++;
-//                        if(GalleryAdapter.spans > GalleryAdapter.MAX_SPANS)
-//                            GalleryAdapter.spans = GalleryAdapter.MAX_SPANS;
-//                        refreshAdapter(true);
-//                        return true;
-//                    } else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
-//                        Toast.makeText(MainActivity.this, "Greater than 1", Toast.LENGTH_SHORT).show();
-//                        GalleryAdapter.spans--;
-//                        if(GalleryAdapter.spans < GalleryAdapter.MIN_SPANS)
-//                            GalleryAdapter.spans = GalleryAdapter.MIN_SPANS;
-//                        refreshAdapter(true);
-//                        return true;
-//                    }
-//                }
+                if (detector.getCurrentSpan() - detector.getPreviousSpan() < -1) {
+                    sv.currentAngle -= 1;
+                }
+                else if (detector.getCurrentSpan() - detector.getPreviousSpan() > 1) {
+                    sv.currentAngle += 1;
+                }
+                sv.invalidate();
                 return true;
             }
 
-            TextView tv;
+            ScaleInfoView sv;
 
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
-                tv = new TextView(MainActivity.this);
+                sv = new ScaleInfoView(MainActivity.this);
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-                tv.setLayoutParams(params);
-                rl.addView(tv);
-//                Toast.makeText(MainActivity.this, "Start", Toast.LENGTH_SHORT).show();
+//                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
+                params.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
+                params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+                sv.setLayoutParams(params);
+                rl.addView(sv);
                 return true;
             }
 
             @Override
             public void onScaleEnd(ScaleGestureDetector detector) {
-                rl.removeView(tv);
-//                Toast.makeText(MainActivity.this, "End", Toast.LENGTH_SHORT).show();
+                int currentSpans = sv.getTargetSpans();
+
+                if(GalleryAdapter.spans != currentSpans) {
+                    GalleryAdapter.spans = currentSpans;
+                    PaddingManager.h.postDelayed(()->refreshAdapter(true),250);
+                }
+                rl.removeView(sv); // use "else" here for avoiding spurious NPEs in that refreshAdapter call removeAllViews
+
             }
         });
 
