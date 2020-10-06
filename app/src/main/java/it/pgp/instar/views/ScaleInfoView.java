@@ -7,6 +7,7 @@ import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.View;
 
+import it.pgp.instar.R;
 import it.pgp.instar.adapters.GalleryAdapter;
 
 public class ScaleInfoView extends View {
@@ -21,6 +22,7 @@ public class ScaleInfoView extends View {
     private int externalRadius;
 
     public int currentAngle = 0;
+    private int bgColor;
 
     public ScaleInfoView(Context context) {
         super(context);
@@ -35,6 +37,7 @@ public class ScaleInfoView extends View {
     }
 
     private void initView() {
+        bgColor = getContext().getResources().getColor(R.color.translucentBlue);
         height = getHeight();
         width = getWidth();
         padding = numeralSpacing + 50;
@@ -50,6 +53,7 @@ public class ScaleInfoView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         if (!isInit) initView();
+        canvas.drawColor(bgColor);
         drawCircle(canvas);
         drawHand(canvas, (float)currentAngle);
         drawNumeral(canvas);

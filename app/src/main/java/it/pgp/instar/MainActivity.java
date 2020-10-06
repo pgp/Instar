@@ -168,10 +168,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 sv = new ScaleInfoView(MainActivity.this);
-                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-//                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
-                params.addRule(RelativeLayout.ALIGN_PARENT_START, RelativeLayout.TRUE);
-                params.addRule(RelativeLayout.ALIGN_PARENT_TOP, RelativeLayout.TRUE);
+                RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                 sv.setLayoutParams(params);
                 rl.addView(sv);
                 return true;
@@ -183,9 +181,9 @@ public class MainActivity extends AppCompatActivity {
 
                 if(GalleryAdapter.spans != currentSpans) {
                     GalleryAdapter.spans = currentSpans;
-                    PaddingManager.h.postDelayed(()->refreshAdapter(true),250);
+                    PaddingManager.h.postDelayed(()->refreshAdapter(true),250); // use postDelayed here for avoiding spurious NPEs
                 }
-                rl.removeView(sv); // use "else" here for avoiding spurious NPEs in that refreshAdapter call removeAllViews
+                rl.removeView(sv);
 
             }
         });

@@ -297,7 +297,6 @@ public class PaddingManager {
 
             @Override
             public void onDisplayChanged(int displayId) {
-                Toast.makeText(activity, "Current orientation: "+activity.getWindowManager().getDefaultDisplay().getRotation(), Toast.LENGTH_SHORT).show();
                 ((MainActivity)activity).refreshAdapter(true);
             }
         };
