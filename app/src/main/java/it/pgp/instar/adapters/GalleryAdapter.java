@@ -29,6 +29,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import it.pgp.instar.ImageDisplayActivity;
 import it.pgp.instar.MainActivity;
+import it.pgp.instar.enums.GalleryOrientation;
 import it.pgp.instar.R;
 
 public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryItemViewHolder> implements SectionTitleProvider {
@@ -209,7 +210,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         int[] wh = getActualScreenDimsWrtOrientation(activity);
         if(activity instanceof MainActivity) {
             MainActivity a = (MainActivity) activity;
-            overridePx = a.current == MainActivity.GalleryOrientation.VERTICAL ?
+            overridePx = a.currentOrientation == GalleryOrientation.VERTICAL ?
                     wh[0] / spans :
                     wh[1] / spans
             ;

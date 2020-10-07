@@ -36,6 +36,8 @@ import java.util.List;
 
 import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.GalleryAdapter;
+import it.pgp.instar.enums.GalleryOrientation;
+import it.pgp.instar.utils.CustomGridLayoutManager;
 import it.pgp.instar.utils.PaddingManager;
 import it.pgp.instar.views.ScaleInfoView;
 
@@ -47,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
 
     LayoutInflater inflater;
     RecyclerView mainGalleryView;
+    CustomGridLayoutManager lm;
     FastScroller fastScroller;
     List<View> viewListTop, viewListBottom;
     GalleryAdapter ga;
@@ -68,24 +71,7 @@ public class MainActivity extends AppCompatActivity {
         }
     };
 
-    public enum GalleryOrientation {
-        HORIZONTAL(GridLayoutManager.HORIZONTAL, R.layout.recyclerview_horizontal),
-        VERTICAL(GridLayoutManager.VERTICAL, R.layout.recyclerview_vertical);
-
-        public final int orientation;
-        public final int layoutResId;
-
-        GalleryOrientation(int orientation, int layoutResId) {
-            this.orientation = orientation;
-            this.layoutResId = layoutResId;
-        }
-
-        public GalleryOrientation next() {
-            return (this==HORIZONTAL)?VERTICAL:HORIZONTAL;
-        }
-    }
-
-    public GalleryOrientation current = GalleryOrientation.VERTICAL;
+    public GalleryOrientation currentOrientation = GalleryOrientation.VERTICAL;
 
     public static final int STORAGE_PERM_ID = 123;
 
@@ -125,19 +111,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void switchGalleryOrientation(View unused) {
-        current = current.next();
+        currentOrientation = currentOrientation.next();
         refreshAdapter(true);
     }
 
     public void refreshAdapter(Object... refreshOnlyViews) {
         rl.removeAllViews();
-        inflater.inflate(current.layoutResId, rl, true);
+        inflater.inflate(currentOrientation.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
         fastScroller = findViewById(R.id.fastScroll);
         viewListTop = Arrays.asList(mainGalleryView,fastScroller);
         viewListBottom = Arrays.asList(findViewById(R.id.switchButton),findViewById(R.id.reloadImgCacheButton));
-
-        mainGalleryView.setLayoutManager(new GridLayoutManager(this, GalleryAdapter.spans, current.orientation, false));
+        lm = new CustomGridLayoutManager(this, GalleryAdapter.spans, false, currentOrientation);
+        mainGalleryView.setLayoutManager(lm);
         mainGalleryView.setHasFixedSize(true);
 
         if(refreshOnlyViews.length == 0)
@@ -168,6 +154,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public boolean onScaleBegin(ScaleGestureDetector detector) {
                 sv = new ScaleInfoView(MainActivity.this);
+                lm.lockScroll();
                 RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
                 params.addRule(RelativeLayout.CENTER_IN_PARENT, RelativeLayout.TRUE);
                 sv.setLayoutParams(params);
@@ -183,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                     GalleryAdapter.spans = currentSpans;
                     PaddingManager.h.postDelayed(()->refreshAdapter(true),250); // use postDelayed here for avoiding spurious NPEs
                 }
+                lm.unlockScroll();
                 rl.removeView(sv);
 
             }
