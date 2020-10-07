@@ -7,7 +7,6 @@ import android.util.DisplayMetrics;
 import android.view.Display;
 import android.view.Surface;
 import android.view.View;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 

@@ -24,7 +24,6 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
-import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -83,7 +82,7 @@ public class MainActivity extends AppCompatActivity {
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                     STORAGE_PERM_ID);
         }
-        else refreshAdapter();
+        else refreshAdapter(false);
     }
 
 
@@ -106,7 +105,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             Toast.makeText(this, R.string.storage_perm_granted, Toast.LENGTH_SHORT).show();
-            refreshAdapter();
+            refreshAdapter(false);
         }
     }
 
@@ -115,7 +114,7 @@ public class MainActivity extends AppCompatActivity {
         refreshAdapter(true);
     }
 
-    public void refreshAdapter(Object... refreshOnlyViews) {
+    public void refreshAdapter(boolean refreshOnlyViews) {
         rl.removeAllViews();
         inflater.inflate(currentOrientation.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
@@ -126,7 +125,7 @@ public class MainActivity extends AppCompatActivity {
         mainGalleryView.setLayoutManager(lm);
         mainGalleryView.setHasFixedSize(true);
 
-        if(refreshOnlyViews.length == 0)
+        if(!refreshOnlyViews)
         ga = GalleryAdapter.createAdapter(this,
                 Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
         else ga = GalleryAdapter.from(ga);
@@ -276,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
                 new Thread(()-> {
                     Glide.get(MainActivity.this).clearDiskCache();
                     runOnUiThread(()->{
-                        refreshAdapter();
+                        refreshAdapter(false);
                         Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
                     });
                 }).start());

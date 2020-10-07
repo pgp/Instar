@@ -10,7 +10,6 @@ import android.widget.TextView;
 import androidx.core.content.ContextCompat;
 
 import com.futuremind.recyclerviewfastscroll.viewprovider.DefaultBubbleBehavior;
-import com.futuremind.recyclerviewfastscroll.RecyclerViewScrollListener;
 import com.futuremind.recyclerviewfastscroll.viewprovider.ScrollerViewProvider;
 import com.futuremind.recyclerviewfastscroll.Utils;
 import com.futuremind.recyclerviewfastscroll.viewprovider.ViewBehavior;
