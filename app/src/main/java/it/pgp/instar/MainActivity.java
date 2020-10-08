@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
             switch (newState) {
-                case RecyclerView.SCROLL_STATE_DRAGGING:
+                case RecyclerView.SCROLL_STATE_SETTLING:
                     GlideR.pauseRequests();
                     Log.d("GlideR","Paused");
                     break;
