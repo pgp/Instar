@@ -30,15 +30,6 @@
                 android:layout_alignParentEnd="true" />
 
             <ImageButton
-                android:id="@+id/reloadImgCacheButton"
-                android:onClick="reloadImgCache"
-                android:src="@android:drawable/ic_menu_rotate"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-            <ImageButton
                 android:id="@+id/switchButton"
                 android:onClick="switchGalleryOrientation"
                 android:src="@android:drawable/ic_input_add"

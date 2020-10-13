@@ -18,6 +18,10 @@
             android:id="@+id/nav_share"
             android:icon="@android:drawable/ic_menu_share"
             android:title="Share" />
+        <item
+            android:id="@+id/reload_img_cache"
+            android:icon="@android:drawable/ic_menu_rotate"
+            android:title="Reload thumbnails cache" />
     </group>
 
 </menu>

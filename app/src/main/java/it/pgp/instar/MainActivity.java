@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainGalleryView = findViewById(R.id.mainGalleryView);
         fastScroller = findViewById(R.id.fastScroll);
         viewListTop = Arrays.asList(mainGalleryView,fastScroller);
-        viewListBottom = Arrays.asList(findViewById(R.id.switchButton),findViewById(R.id.reloadImgCacheButton));
+        viewListBottom = Arrays.asList(findViewById(R.id.switchButton));
         lm = new CustomGridLayoutManager(this, GalleryAdapter.spans, false, currentOrientation);
         mainGalleryView.setLayoutManager(lm);
         mainGalleryView.setHasFixedSize(true);
@@ -305,21 +305,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        // Handle navigation view item clicks here.
-        int id = item.getItemId();
-
         drawer.closeDrawer(GravityCompat.START);
 
-        if (id == R.id.switch_gallery_orientation) {
-            switchGalleryOrientation(null);
-        } else if (id == R.id.nav_slideshow) {
-            Toast.makeText(getApplicationContext(), "Slideshow is clicked", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_manage) {
-            Toast.makeText(getApplicationContext(), "Tools is clicked", Toast.LENGTH_SHORT).show();
-
-        } else if (id == R.id.nav_share) {
-            Toast.makeText(getApplicationContext(), "Share is clicked", Toast.LENGTH_SHORT).show();
+        switch(item.getItemId()) {
+            case R.id.switch_gallery_orientation:
+                switchGalleryOrientation(null);
+                break;
+            case R.id.reload_img_cache:
+                reloadImgCache(null);
+                break;
 
         }
 
