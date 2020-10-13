@@ -54,7 +54,7 @@
             android:id="@+id/nav_view"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:layout_gravity="end"
+            android:layout_gravity="start"
             android:background="@color/translucentBlue"
             app:itemTextColor="#ffffff"
             app:itemIconTint="#cd4312"

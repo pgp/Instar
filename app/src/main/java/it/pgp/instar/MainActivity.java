@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     List<View> viewListTop, viewListBottom;
     GalleryAdapter ga;
     RequestManager GlideR;
+    DrawerLayout drawer;
 
     private final RecyclerView.OnScrollListener glideScrollListener = new RecyclerView.OnScrollListener() {
         @Override
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         lm = new CustomGridLayoutManager(this, GalleryAdapter.spans, false, currentOrientation);
         mainGalleryView.setLayoutManager(lm);
         mainGalleryView.setHasFixedSize(true);
+        drawer = findViewById(R.id.drawer_layout);
 
         if(!refreshOnlyViews)
         ga = GalleryAdapter.createAdapter(this,
@@ -254,7 +256,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onBackPressed() {
-        if(GalleryAdapter.instance != null && GalleryAdapter.instance.multiselect)
+        if(drawer.isDrawerOpen(GravityCompat.START))
+            drawer.closeDrawer(GravityCompat.START);
+        else if(GalleryAdapter.instance != null && GalleryAdapter.instance.multiselect)
             exitMultiSelectMode();
         else super.onBackPressed();
     }
@@ -304,8 +308,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.closeDrawer(GravityCompat.END);
+        drawer.closeDrawer(GravityCompat.START);
 
         if (id == R.id.switch_gallery_orientation) {
             switchGalleryOrientation(null);
