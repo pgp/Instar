@@ -24,11 +24,14 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
+import com.google.android.material.navigation.NavigationView;
 
 import java.util.Arrays;
 import java.util.List;
@@ -44,7 +47,7 @@ import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_STABLE;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
     LayoutInflater inflater;
     RecyclerView mainGalleryView;
@@ -190,6 +193,10 @@ public class MainActivity extends AppCompatActivity {
                     SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         }
         paddingManager.registerDisplayListener(viewListTop, viewListBottom);
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
     }
 
     RelativeLayout rl;
@@ -290,5 +297,29 @@ public class MainActivity extends AppCompatActivity {
         else
             getSupportActionBar().show();
         refreshAdapter(true);
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(MenuItem item) {
+        // Handle navigation view item clicks here.
+        int id = item.getItemId();
+
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.END);
+
+        if (id == R.id.switch_gallery_orientation) {
+            switchGalleryOrientation(null);
+        } else if (id == R.id.nav_slideshow) {
+            Toast.makeText(getApplicationContext(), "Slideshow is clicked", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_manage) {
+            Toast.makeText(getApplicationContext(), "Tools is clicked", Toast.LENGTH_SHORT).show();
+
+        } else if (id == R.id.nav_share) {
+            Toast.makeText(getApplicationContext(), "Share is clicked", Toast.LENGTH_SHORT).show();
+
+        }
+
+        return true;
     }
 }
