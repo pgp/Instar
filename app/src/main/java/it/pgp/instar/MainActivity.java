@@ -229,6 +229,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.invert:
                 GalleryAdapter.instance.invertSelection();
                 break;
+            case R.id.delete_items:
+                if(GalleryAdapter.instance.selectedItems.get()==0)
+                    Toast.makeText(this, "No items selected for deletion", Toast.LENGTH_SHORT).show();
+                else GalleryAdapter.instance.deleteSelection();
         }
         return true;
     }
@@ -263,7 +267,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         else super.onBackPressed();
     }
 
-    public final DialogInterface.OnClickListener alertDialogNoOpsChoice = (dialog, which) -> {};
+    public static final DialogInterface.OnClickListener alertDialogNoOpsChoice = (dialog, which) -> {};
 
     public void exitMultiSelectMode() {
         AlertDialog.Builder bld = new AlertDialog.Builder(this);
@@ -296,11 +300,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void toggleActionBar(boolean hidden) {
         PaddingManager.hidden = hidden;
-        if(PaddingManager.hidden)
+        if(PaddingManager.hidden) {
             getSupportActionBar().hide();
+            refreshAdapter(true);
+        }
         else
             getSupportActionBar().show();
-        refreshAdapter(true);
     }
 
     @Override

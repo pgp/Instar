@@ -1,5 +1,6 @@
 package it.pgp.instar.adapters;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -11,6 +12,7 @@ import android.view.Surface;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -121,6 +123,28 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
         notifyDataSetChanged();
     }
 
+    public void deleteSelection() {
+        AlertDialog.Builder bld = new AlertDialog.Builder(activity);
+        int N = selectedItems.get();
+        bld.setTitle("Delete "+N+" items?");
+        bld.setNegativeButton("No", MainActivity.alertDialogNoOpsChoice);
+        bld.setPositiveButton("Yes", (dialog, which) -> {
+            int actuallyDeletedItems = 0;
+            for(int i=0;i<objects.size();i++) {
+                GalleryItem item = objects.get(i);
+                if (item.selected) {
+                    if (item.getFile().delete()) actuallyDeletedItems++;
+                }
+            }
+            if(actuallyDeletedItems != N)
+                Toast.makeText(activity, "Items deleted: "+actuallyDeletedItems+", unable to delete some items", Toast.LENGTH_SHORT).show();
+            if(actuallyDeletedItems > 0)
+                reloadFromFiles();
+        });
+        AlertDialog alertDialog = bld.create();
+        alertDialog.show();
+    }
+
     public void onGalleryItemClicked(int position) {
         if(!(activity instanceof MainActivity)) {
             ((ImageDisplayActivity)activity).evp1.setCurrentItem(position);
@@ -222,6 +246,19 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
         if(activity instanceof MainActivity)
             instance = this;
+    }
+
+    private void reloadFromFiles() {
+        objects.clear();
+        selectedItems.set(0);
+        File[] ff = new File(basePath).listFiles();
+        if(ff == null) {
+            Toast.makeText(activity, "Base path no longer readable, exiting", Toast.LENGTH_SHORT).show();
+            activity.finishAffinity();
+            return;
+        }
+        for(File f: ff) objects.add(new GalleryItem(f.getAbsolutePath()));
+        notifyDataSetChanged();
     }
 
     public static GalleryAdapter createAdapter(AppCompatActivity activity, String basePath) {
