@@ -39,6 +39,7 @@ import java.util.List;
 import it.pgp.instar.adapters.CustomScrollerViewProvider;
 import it.pgp.instar.adapters.GalleryAdapter;
 import it.pgp.instar.enums.GalleryOrientation;
+import it.pgp.instar.enums.GalleryRefreshMode;
 import it.pgp.instar.utils.CustomGridLayoutManager;
 import it.pgp.instar.utils.PaddingManager;
 import it.pgp.instar.views.ScaleInfoView;
@@ -86,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE},
                     STORAGE_PERM_ID);
         }
-        else refreshAdapter(false);
+        else refreshAdapter(GalleryRefreshMode.REFRESH_ALL);
     }
 
 
@@ -109,16 +110,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
 
             Toast.makeText(this, R.string.storage_perm_granted, Toast.LENGTH_SHORT).show();
-            refreshAdapter(false);
+            refreshAdapter(GalleryRefreshMode.REFRESH_ALL);
         }
     }
 
     public void switchGalleryOrientation(View unused) {
         currentOrientation = currentOrientation.next();
-        refreshAdapter(true);
+        refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE);
     }
 
-    public void refreshAdapter(boolean refreshOnlyViews) {
+    public void refreshAdapter(GalleryRefreshMode refreshOnlyViews) {
         rl.removeAllViews();
         inflater.inflate(currentOrientation.layoutResId, rl, true);
         mainGalleryView = findViewById(R.id.mainGalleryView);
@@ -130,10 +131,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainGalleryView.setHasFixedSize(true);
         drawer = findViewById(R.id.drawer_layout);
 
-        if(!refreshOnlyViews)
-        ga = GalleryAdapter.createAdapter(this,
-                Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
-        else ga = GalleryAdapter.from(ga);
+        switch(refreshOnlyViews) {
+            case REFRESH_ALL:
+                ga = GalleryAdapter.createAdapter(this,
+                        Environment.getExternalStorageDirectory().getAbsolutePath() + "/DCIM/Camera");
+                break;
+            case KEEP_SELECTION_MODE:
+                ga = GalleryAdapter.from(ga);
+                break;
+            case KEEP_ALL:
+                break;
+        }
+
         if(ga == null) {
             Toast.makeText(this, "Unable to access DCIM/Camera, exiting...", Toast.LENGTH_SHORT).show();
             finishAffinity();
@@ -172,7 +181,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if(GalleryAdapter.spans != currentSpans) {
                     GalleryAdapter.spans = currentSpans;
-                    PaddingManager.h.postDelayed(()->refreshAdapter(true),250); // use postDelayed here for avoiding spurious NPEs
+                    PaddingManager.h.postDelayed(()->refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE),250); // use postDelayed here for avoiding spurious NPEs
                 }
                 lm.unlockScroll();
                 rl.removeView(sv);
@@ -290,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 new Thread(()-> {
                     Glide.get(MainActivity.this).clearDiskCache();
                     runOnUiThread(()->{
-                        refreshAdapter(false);
+                        refreshAdapter(GalleryRefreshMode.REFRESH_ALL);
                         Toast.makeText(MainActivity.this, "Completed", Toast.LENGTH_SHORT).show();
                     });
                 }).start());
@@ -302,10 +311,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         PaddingManager.hidden = hidden;
         if(PaddingManager.hidden) {
             getSupportActionBar().hide();
-            refreshAdapter(true);
+            refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE);
         }
-        else
+        else {
+            // legacy refreshAdapter() could not be called here, because otherwise selectedItems would become incorrect by 1
+            // but it had to be called in order to update insets, so signature was modified from boolean to enum param
             getSupportActionBar().show();
+            refreshAdapter(GalleryRefreshMode.KEEP_ALL);
+        }
     }
 
     @Override

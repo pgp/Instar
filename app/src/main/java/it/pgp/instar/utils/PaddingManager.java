@@ -15,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 import it.pgp.instar.MainActivity;
+import it.pgp.instar.enums.GalleryRefreshMode;
 
 public class PaddingManager {
 
@@ -296,7 +297,7 @@ public class PaddingManager {
 
             @Override
             public void onDisplayChanged(int displayId) {
-                ((MainActivity)activity).refreshAdapter(true);
+                ((MainActivity)activity).refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE);
             }
         };
 
