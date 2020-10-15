@@ -25,8 +25,12 @@ import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import it.pgp.instar.ImageDisplayActivity;
@@ -49,6 +53,22 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     public boolean multiselect = false;
     public final AtomicInteger selectedItems = new AtomicInteger(0);
+
+    public static class ImgFilter implements FileFilter {
+        private static final Set<String> allowedExts = new HashSet<>();
+
+        static {
+            allowedExts.addAll(Arrays.asList("bmp", "jpg", "png", "gif"));
+        }
+
+        public static final ImgFilter instance = new ImgFilter();
+
+        public boolean accept(File file) {
+            String s = file.getName().toLowerCase();
+            if (s.length() < 3) return false;
+            return allowedExts.contains(s.substring(s.length()-3));
+        }
+    }
 
     @NonNull
     @Override
@@ -73,19 +93,46 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
                 overridePx, overridePx, false));
     }
 
+    public File getCandidateFileForThumbnail(File startDir) {
+        File[] ff = startDir.listFiles();
+        if(ff == null || ff.length == 0) return null;
+        for(File f : ff) {
+            if(f.isFile()) return f;
+            else return getCandidateFileForThumbnail(f); // DFS
+        }
+        return null;
+    }
+
     @Override
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
         GalleryItem item = objects.get(position);
+        File f = item.getFile();
+        // TODO put DFS step in custom loader (onResourceReady etc...)
+        int fallback = R.mipmap.placeholder1;
+        if(f.isDirectory()) {
+            f = getCandidateFileForThumbnail(f);
+        }
 
-        Glide
+        if(f != null)
+            Glide
                 .with(activity)
-                .load(new File(item.filepath).getAbsolutePath())
+                .load(f.getAbsolutePath())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
                 .placeholder(currentPlaceholders[position%2])
                 .override(overridePx,overridePx)
                 .transition(drawableTransitionOptions)
                 .into(holder.imageView);
+        else
+            Glide
+                    .with(activity)
+                    .load(fallback)
+                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    .centerCrop()
+                    .placeholder(currentPlaceholders[position%2])
+                    .override(overridePx,overridePx)
+                    .transition(drawableTransitionOptions)
+                    .into(holder.imageView);
 
         if(multiselect)
             holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
@@ -154,6 +201,10 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
             onGalleryItemLongClicked(position);
         }
         else {
+            if (getItem(position).getFile().isDirectory()) {
+                Toast.makeText(activity, "File is a directory", Toast.LENGTH_SHORT).show();
+                return;
+            }
             Intent intent = new Intent(activity, ImageDisplayActivity.class);
             intent.putExtra("IMG_POS", position);
             activity.startActivity(intent);

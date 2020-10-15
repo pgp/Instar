@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.ortiz.touchview.TouchImageView;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -50,6 +51,12 @@ public class ImageDisplayActivity extends AppCompatActivity {
         @Override
         public Object instantiateItem(@NonNull ViewGroup container, int position) {
             TouchImageView v = new TouchImageView(ImageDisplayActivity.this);
+            File f = objects.get(position).getFile();
+            if(f.isDirectory()) {
+                container.addView(v, RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+                return v;
+            }
+
             String filepath = objects.get(position).filepath;
             v.setImageBitmap(BitmapFactory.decodeFile(filepath));
             v.setOnClickListener(w->{
