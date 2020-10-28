@@ -41,6 +41,7 @@ import it.pgp.instar.adapters.GalleryAdapter;
 import it.pgp.instar.enums.GalleryOrientation;
 import it.pgp.instar.enums.GalleryRefreshMode;
 import it.pgp.instar.utils.CustomGridLayoutManager;
+import it.pgp.instar.utils.MiddleDividerItemDecoration;
 import it.pgp.instar.utils.PaddingManager;
 import it.pgp.instar.views.ScaleInfoView;
 
@@ -128,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         viewListBottom = Arrays.asList(findViewById(R.id.switchButton));
         lm = new CustomGridLayoutManager(this, GalleryAdapter.spans, false, currentOrientation);
         mainGalleryView.setLayoutManager(lm);
+        mainGalleryView.addItemDecoration(new MiddleDividerItemDecoration(this,currentOrientation.orientation));
         mainGalleryView.setHasFixedSize(true);
         drawer = findViewById(R.id.drawer_layout);
 
