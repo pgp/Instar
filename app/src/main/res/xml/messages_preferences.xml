@@ -1,0 +1,19 @@
+<PreferenceScreen
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <EditTextPreference
+        app:key="span_num"
+        android:inputType="number"
+        app:title="@string/span_num_label"
+        app:useSimpleSummaryProvider="true" />
+
+    <ListPreference
+        app:defaultValue="selection_example_choice_one"
+        app:entries="@array/selection_example_entries"
+        app:entryValues="@array/selection_example_values"
+        app:key="selection_example_choice_one"
+        app:title="@string/selection_example"
+        app:useSimpleSummaryProvider="true" />
+
+</PreferenceScreen>

@@ -1,0 +1,12 @@
+<resources>
+    <!-- Selection Example Preference -->
+    <string-array name="selection_example_entries">
+        <item>One</item>
+        <item>Two</item>
+    </string-array>
+
+    <string-array name="selection_example_values">
+        <item>selection_example_choice_one</item>
+        <item>selection_example_choice_two</item>
+    </string-array>
+</resources>

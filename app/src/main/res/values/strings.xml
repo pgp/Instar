@@ -6,4 +6,19 @@
     <string name="all">All</string>
     <string name="none">None</string>
     <string name="invert">Invert</string>
+    <string name="title_activity_settings">SettingsActivity</string>
+
+    <!-- Preference Titles -->
+    <string name="appearance_header">Appearance</string>
+    <string name="misc_header">Misc</string>
+
+    <!-- Messages Preferences -->
+    <string name="span_num_label">Number of items per row/column</string>
+    <string name="selection_example">Default selection (example)</string>
+
+    <!-- Second Settings Tab Preferences -->
+    <string name="second_title">Example on/off option</string>
+    <string name="third_title">Example on/off option with description</string>
+    <string name="third_option_summary_on">This message appears when the corresponding option is ON</string>
+    <string name="third_option_summary_off">This message appears when the corresponding option is OFF</string>
 </resources>

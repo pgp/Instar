@@ -1,0 +1,15 @@
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <Preference
+        app:fragment="it.pgp.instar.SettingsActivity$MessagesFragment"
+        app:icon="@drawable/messages"
+        app:key="appearance_header"
+        app:title="@string/appearance_header" />
+
+    <Preference
+        app:fragment="it.pgp.instar.SettingsActivity$SyncFragment"
+        app:icon="@drawable/sync"
+        app:key="misc_header"
+        app:title="@string/misc_header" />
+
+</PreferenceScreen>

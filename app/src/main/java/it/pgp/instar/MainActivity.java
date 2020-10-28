@@ -4,6 +4,7 @@ import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -22,6 +23,7 @@ import android.view.Window;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.view.GravityCompat;
@@ -43,6 +45,7 @@ import it.pgp.instar.enums.GalleryRefreshMode;
 import it.pgp.instar.utils.CustomGridLayoutManager;
 import it.pgp.instar.utils.MiddleDividerItemDecoration;
 import it.pgp.instar.utils.PaddingManager;
+import it.pgp.instar.utils.SettingsManager;
 import it.pgp.instar.views.ScaleInfoView;
 
 import static android.view.View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN;
@@ -127,6 +130,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         fastScroller = findViewById(R.id.fastScroll);
         viewListTop = Arrays.asList(mainGalleryView,fastScroller);
         viewListBottom = Arrays.asList(findViewById(R.id.switchButton));
+
+        GalleryAdapter.spans = new SettingsManager(this).loadSpanNumber();
         lm = new CustomGridLayoutManager(this, GalleryAdapter.spans, false, currentOrientation);
         mainGalleryView.setLayoutManager(lm);
         mainGalleryView.addItemDecoration(new MiddleDividerItemDecoration(this,currentOrientation.orientation));
@@ -183,6 +188,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 if(GalleryAdapter.spans != currentSpans) {
                     GalleryAdapter.spans = currentSpans;
+                    new SettingsManager(MainActivity.this).storeSpanNumber(currentSpans);
                     PaddingManager.h.postDelayed(()->refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE),250); // use postDelayed here for avoiding spurious NPEs
                 }
                 lm.unlockScroll();
@@ -334,9 +340,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.reload_img_cache:
                 reloadImgCache(null);
                 break;
-
+            case R.id.nav_manage:
+                startActivityForResult(new Intent(MainActivity.this,SettingsActivity.class), SettingsActivity.SETTINGS_REQUEST_CODE);
+                break;
         }
 
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == SettingsActivity.SETTINGS_REQUEST_CODE) {
+            refreshAdapter(GalleryRefreshMode.KEEP_SELECTION_MODE);
+        }
     }
 }
