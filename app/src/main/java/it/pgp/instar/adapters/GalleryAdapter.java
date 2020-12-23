@@ -19,6 +19,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
@@ -77,8 +78,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
         GalleryItem item = objects.get(position);
 
-        Glide
-                .with(activity)
+        GlideR
                 .load(new File(item.filepath).getAbsolutePath())
                 .diskCacheStrategy(DiskCacheStrategy.ALL)
                 .centerCrop()
@@ -199,6 +199,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public final AppCompatActivity activity;
+    public final RequestManager GlideR;
     public final List<GalleryItem> objects;
     protected LayoutInflater inflater;
 
@@ -229,6 +230,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     private GalleryAdapter(@NonNull AppCompatActivity activity, @NonNull List<GalleryItem> objects, String basePath) {
         inflater = LayoutInflater.from(activity);
         this.activity = activity;
+        this.GlideR = Glide.with(activity);
         this.objects = objects;
         this.basePath = basePath;
         int[] wh = getActualScreenDimsWrtOrientation(activity);
