@@ -32,6 +32,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestManager;
+import com.facebook.drawee.backends.pipeline.Fresco;
 import com.futuremind.recyclerviewfastscroll.FastScroller;
 import com.google.android.material.navigation.NavigationView;
 
@@ -265,6 +266,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         rl = findViewById(R.id.rootLayout);
         inflater = LayoutInflater.from(this);
         GlideR = Glide.with(MainActivity.this);
+        Fresco.initialize(this);
 
         checkStoragePermissions();
     }

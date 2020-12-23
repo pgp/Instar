@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.Surface;
@@ -23,12 +25,16 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.facebook.drawee.view.SimpleDraweeView;
 import com.facebook.imagepipeline.common.ResizeOptions;
+import com.facebook.imagepipeline.request.ImageRequest;
+import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import it.pgp.instar.ImageDisplayActivity;
@@ -57,7 +63,7 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     @NonNull
     @Override
     public GalleryItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = inflater.inflate(R.layout.single_image, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.single_image, parent, false);
         return new GalleryItemViewHolder(view);
     }
 
@@ -81,14 +87,20 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     public void onBindViewHolder(@NonNull GalleryItemViewHolder holder, int position) {
         GalleryItem item = objects.get(position);
 
-        GlideR
-                .load(new File(item.filepath).getAbsolutePath())
-                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                .centerCrop()
-                .placeholder(currentPlaceholders[position%2])
-                .override(overridePx,overridePx)
-                .transition(drawableTransitionOptions)
-                .into(holder.imageView);
+//        GlideR
+//                .load(new File(item.filepath).getAbsolutePath())
+//                .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                .centerCrop()
+//                .placeholder(currentPlaceholders[position%2])
+//                .override(overridePx,overridePx)
+//                .transition(drawableTransitionOptions)
+//                .into(holder.imageView);
+
+        final ImageRequest imageRequest =
+                ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(item.getFile()))
+                        .setResizeOptions(resizeOptions).build();
+        holder.imageView.setImageRequest(imageRequest);
+
 
         if(multiselect)
             holder.imageView.setAlpha(item.selected ? 0.5f : 1.0f);
@@ -188,11 +200,15 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
     }
 
     public static class GalleryItemViewHolder extends RecyclerView.ViewHolder {
-        ImageView imageView;
+//        ImageView imageView;
+        private static final Random sRandom = new Random();
+        private final SimpleDraweeView imageView;
 
         public GalleryItemViewHolder(@NonNull View itemView) {
             super(itemView);
+//            imageView = itemView.findViewById(R.id.img1);
             imageView = itemView.findViewById(R.id.img1);
+            imageView.getHierarchy().setPlaceholderImage(new ColorDrawable(sRandom.nextInt()));
         }
 
         public void bind(int position, GalleryAdapter galleryAdapter) {
@@ -248,6 +264,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
             overridePx = wh[1] / MAX_SPANS;
         }
         setPlaceholders();
+
+        resizeOptions = new ResizeOptions(overridePx, overridePx);
 
         if(activity instanceof MainActivity)
             instance = this;
