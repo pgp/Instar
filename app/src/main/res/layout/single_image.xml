@@ -6,3 +6,8 @@
 
 <!-- BEWARE!!! width and height here must be equal to the ones defined in Glide override command, in order
  to avoid resizing form placeholder to loaded image -->
+
+<!--  https://frescolib.org/docs/using-simpledraweeview.html  -->
+<!--  https://code.luasoftware.com/tutorials/android/android-fresco-optimize-performance-for-recyclerview/  -->
+<!--  https://stackoverflow.com/questions/50115948/out-of-memory-ooms-using-fresco-in-recyclerview  -->
+<!--  https://github.com/facebook/fresco/issues/512  -->

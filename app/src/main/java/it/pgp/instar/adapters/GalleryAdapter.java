@@ -23,6 +23,7 @@ import com.bumptech.glide.RequestManager;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions;
 import com.bumptech.glide.request.transition.DrawableCrossFadeFactory;
+import com.facebook.imagepipeline.common.ResizeOptions;
 import com.futuremind.recyclerviewfastscroll.SectionTitleProvider;
 
 import java.io.File;
@@ -50,6 +51,8 @@ public class GalleryAdapter extends RecyclerView.Adapter<GalleryAdapter.GalleryI
 
     public boolean multiselect = false;
     public final AtomicInteger selectedItems = new AtomicInteger(0);
+
+    public ResizeOptions resizeOptions;
 
     @NonNull
     @Override
